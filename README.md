@@ -20,8 +20,8 @@ Installation
 ## App Info
 
 ### Authors
-Jane Moorhead
-Wondimagegn Tesfaye Beshah
+- Jane Moorhead
+- Wondimagegn Tesfaye Beshah
 
 ### Version
 
