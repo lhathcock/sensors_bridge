@@ -1,4 +1,4 @@
-# Water Monitor Sensor Bridge
+# Water Monitor Sensors Bridge
 
 > Receives data from water quality sensors and sends it to water monitor server.
 > This tool uses Python.

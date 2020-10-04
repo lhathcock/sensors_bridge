@@ -6,7 +6,9 @@ PORT_INFO = {
     'COM3': {
         'byte_size': 72, 'baud_rate': 19200,
         'separator': r',',
-        'header': ['date'],
+        'header': ['start', 'year', 'month', 'day', 'hour',
+                   'minute','second', 'zero_ad', 'current_ad', 'measured_co2',
+                   'avarage_irga_temperture', 'humidity', 'humidity_sensor_temperature'],
         'name':'co2procv'
     },
     'COM4': {
