@@ -11,10 +11,11 @@ from config import SERVER, PORT_INFO
 # failed to receive and failed to send
 # error-log:
 # store only failures to read and send data to the server.
+# error log and verbose log will be different files.
 # ----------------------------------------
 #TODO First - Save all data to file while sending it to the server
 #TODO Future - Write it to temporary file, if the script is unable to send to the server
-#TODO Connect to all ports in one script using
+#TODO Connect to all ports in one script using multiprocessing!
 
 file_path = r"C:\Users\User\Desktop\Sensor Data\sensor6.raw"
 
