@@ -3,43 +3,18 @@ import time
 import os
 import serial
 import requests
-
-PORT_INFO = {
-    'COM3': {
-        'byte_size': 72, 'baud_rate': 19200,
-        'separator': r',',
-        'header': ['date']
-    },
-    'COM4': {
-        'byte_size': 48, 'baud_rate': 19200,
-        'separator': r'\t+',
-        'header': ['date', 'time', 'wavelength1', 'chl_raw',
-                   'wavelength2', 'peryth_raw', 'wavelength3',
-                   'pcyan_raw', 'wavelength4'],
-    },
-    'COM5': {
-        'byte_size': 44, 'baud_rate': 19200,
-        'separator': r'\t+',
-        'header': ['date', 'time', 'wavelength1', 'bb_470_raw',
-                   'wavelength2', 'bb_532_raw', 'wavelength3',
-                   'bb_650_raw', 'wavelength4']
-    },
-    'COM6': {
-        'byte_size': 45, 'baud_rate': 19200,
-        'separator': r'\t+',
-        'header': ['date', 'time', 'wavelength1',
-                   'turbidity_595_nm_raw', 'wavelength2',
-                   'turbidity_700_nm_raw', 'wavelength3',
-                   'cdom_460_nm_raw', 'wavelength4']
-    },
-    'COM7': {
-        'byte_size': 72, 'baud_rate': 9600,
-        'separator': r',',
-        'header': ['raw_phase_delay', 'raw_thermistor_voltage',
-                   'oxygen_ml_L', 'temperature']
-    }
-}
-API_ENDPOINT = 'https://water.geosci.msstate.edu'
+from config import SERVER, PORT_INFO
+#TODO create a log file to store all activity (with options of verbose and error)
+# verbose-log:
+# all communication-data received,
+# successfully sent,
+# failed to receive and failed to send
+# error-log:
+# store only failures to read and send data to the server.
+# ----------------------------------------
+#TODO First - Save all data to file while sending it to the server
+#TODO Future - Write it to temporary file, if the script is unable to send to the server
+#TODO Connect to all ports in one script using
 
 file_path = r"C:\Users\User\Desktop\Sensor Data\sensor6.raw"
 
@@ -55,14 +30,6 @@ def read_file(file_path):
             time.sleep(0.1)  # Sleep briefly
             continue
         yield line
-
-
-# loglines = read_file(file_path)
-# for line in loglines:
-#     row = re.split(r'\t+', line.strip())
-#     # data = dict(zip(eco_1_header, row))
-#     # print (data)
-#     print(line, end='')
 
 def read_com(com):
     a_serial = serial.Serial(
@@ -83,9 +50,11 @@ def read_com(com):
         row = re.split(PORT_INFO[com]['separator'], c.decode().strip())
         if len(row) < 4:
             continue
+
         data = dict(zip(PORT_INFO[com]['header'], row))
-        # print (data)
-        r = requests.post(url=API_ENDPOINT, data=data)
+        url = '{}/{}'.format(SERVER, PORT_INFO[com]['name'])
+        req = requests.post(url=url, data=data)
+
         # write file to a file as a backup
         yield data
 
