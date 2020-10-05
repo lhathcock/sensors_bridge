@@ -1,15 +1,17 @@
-SERVER='http://localhost:6000'
-SERVER_LOGIN = "http://localhost:6000/signin"
+SERVER='https://water.geosci.msstate.edu/monitoradmin/'
+SERVER_LOGIN = "https://water.geosci.msstate.edu/monitoradmin/signin"
 USERNAME='user1'
 PASSWORD='password1'
+DATA_PATH = r'C:\Users\User\Desktop\sensors_bridge\data'
 PORT_INFO = {
     'COM3': {
+        'name': 'co2procv',
         'byte_size': 72, 'baud_rate': 19200,
         'separator': r',',
         'header': ['start', 'year', 'month', 'day', 'hour',
-                   'minute','second', 'zero_ad', 'current_ad', 'measured_co2',
-                   'avarage_irga_temperture', 'humidity', 'humidity_sensor_temperature'],
-        'name':'co2procv'
+                   'minute', 'second', 'zero_ad', 'current_ad', 'measured_co2',
+                   'avarage_irga_temperature', 'humidity', 'humidity_sensor_temperature',
+                   'gas_stream_pressure','igr_detector_temperature']
     },
     'COM4': {
         'byte_size': 48, 'baud_rate': 19200,
@@ -41,7 +43,7 @@ PORT_INFO = {
         'byte_size': 72, 'baud_rate': 9600,
         'separator': r',',
         'header': ['raw_phase_delay', 'raw_thermistor_voltage',
-                   'oxygen_ml_L', 'temperature'],
+                   'oxygen_ml_l', 'temperature'],
         'name': 'dissolvedoxygen'
     }
 }
