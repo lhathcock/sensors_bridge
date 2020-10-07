@@ -3,6 +3,7 @@ import time
 import os
 import serial
 import glob
+import traceback
 from datetime import datetime
 
 from urllib.parse import urlencode
@@ -80,7 +81,7 @@ def save_to_file(com, data):
 
 def save_to_temp_file(com, data):
     now = datetime.now()
-    dt_string = now.strftime("%d_%m_%Y_temp_")
+    dt_string = now.strftime("%d_%m_%Y_temp")
     file_name = '{}_{}.txt'.format(dt_string, PORT_INFO[com]['name'])
     file_path = os.path.join(DATA_PATH, file_name)
     with open(file_path, 'a') as data_file:
@@ -102,23 +103,19 @@ def send_to_server(com, data):
         print(msg_with_time)
 
 
-def send_temp_files():
+def send_temp_files_by_com(com):
     global SESSION
     if SESSION is None:  # dont send if the user hasn't logged in
         return
-    temp_files = glob.glob(DATA_PATH + '/*temp*')
-
+    name = PORT_INFO[com]['name']
+    temp_files = glob.glob(DATA_PATH + '/*temp*' + name + '*')
+    # print (temp_files)
     for temp_file in temp_files:  # get com port from temp file
-        coms = [l for l in PORT_INFO.keys()
-                if PORT_INFO[l]['name'] in temp_file]
-
-        if len(coms) > 0:
-            com = coms[0]
-        else:
-            continue  # because it is not a comp file
-        msg = 'Sending temporarily stored data in {}'.format(temp_file)
+        if not os.path.exists(temp_file):
+            continue
+        msg = 'Sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg)
-        print(msg_with_time)
+        # print(msg_with_time)
         with open(temp_file, "r") as f:
             lines = f.readlines()
 
@@ -126,10 +123,48 @@ def send_temp_files():
                 data = dict(zip(PORT_INFO[com]['header'],
                                 line.strip().split(',')))
                 send_to_server(com, data)
-        msg2 = 'Completed sending temporarily stored data in {}'.format(temp_file)
+        msg2 = 'Completed sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg2)
         print(msg_with_time)
-        os.remove(temp_file)  # delete file after all data is sent
+        try:
+            os.remove(temp_file)  # delete file after all data is sent
+        except:  # error may happen when deleting file being read so pass it
+            pass
+
+
+def send_temp_files():
+    global SESSION
+    if SESSION is None:  # dont send if the user hasn't logged in
+        return
+    temp_files = glob.glob(DATA_PATH + '/*temp*')
+    # print (temp_files)
+    for temp_file in temp_files:  # get com port from temp file
+        if not os.path.exists(temp_file):
+            continue
+        coms = [l for l in PORT_INFO.keys()
+                if PORT_INFO[l]['name'] in temp_file]
+
+        if len(coms) > 0:
+            com = coms[0]
+        else:
+            continue  # because it is not a comp file
+        msg = 'Sending backup {}'.format(temp_file)
+        msg_with_time = create_log(msg)
+        # print(msg_with_time)
+        with open(temp_file, "r") as f:
+            lines = f.readlines()
+
+            for line in lines:
+                data = dict(zip(PORT_INFO[com]['header'],
+                                line.strip().split(',')))
+                send_to_server(com, data)
+        msg2 = 'Completed sending backup {}'.format(temp_file)
+        msg_with_time = create_log(msg2)
+        print(msg_with_time)
+        try:
+            os.remove(temp_file)  # delete file after all data is sent
+        except:  # error may happen when deleting file being read so pass it
+            pass
 
 
 def delete_old_files():
@@ -167,16 +202,16 @@ def read_com(com):
             if SESSION is not None:
                 send_to_server(com, data)
             else:
+                # print ("SESSION ", SESSION, com)
                 save_to_temp_file(com, row)
                 show_no_internet_error = connect_to_server(com, show_no_internet_error)
-                if show_no_internet_error:
+                if show_no_internet_error:  # there is connection
                     # send data that was not sent due to internet problem
-                    send_temp_files()
+                    send_temp_files_by_com(com)
 
             save_to_file(com, row)
-    except Exception as ex:
-
-        msg_with_time = create_log(ex)
+    except:
+        msg_with_time = create_log(traceback.format_exc())
         print(msg_with_time)
 #
 # msg = 'Started Sensors Bridge'

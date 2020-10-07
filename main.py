@@ -16,8 +16,8 @@ if __name__ == '__main__':
 
         p = Process(target=read_com, args=(com,))
         processes.append(p)
-    p2 = Process(target=send_temp_files)
-    processes.append(p2)
+    # p2 = Process(target=send_temp_files)
+    # processes.append(p2)
 
     for p in processes:
         p.start()
