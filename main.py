@@ -1,12 +1,19 @@
 from multiprocessing import Process
-from transfer import read_com, connect_to_server, send_temp_files
+from transfer import read_com,create_log, connect_to_server, send_temp_files
 from config import PORT_INFO
 
-connect_to_server()
+
 if __name__ == '__main__':
     processes = []
     for com in PORT_INFO.keys():
-        print(com)
+        # print(com)
+        msg = 'Sensors Bridge connected to {} ({})'.format(
+            PORT_INFO[com]['name'], com
+        )
+        msg_with_time = create_log(msg)
+        print(msg_with_time)
+        connect_to_server(com)
+
         p = Process(target=read_com, args=(com,))
         processes.append(p)
     p2 = Process(target=send_temp_files)

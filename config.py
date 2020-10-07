@@ -1,7 +1,7 @@
 SERVER='https://water.geosci.msstate.edu/monitoradmin/'
 SERVER_LOGIN = "https://water.geosci.msstate.edu/monitoradmin/signin"
-USERNAME='user1'
-PASSWORD='password1'
+USERNAME='msuseatracboat'
+PASSWORD='44dffA33tv'
 DATA_PATH = r'C:\Users\User\Desktop\sensors_bridge\data'
 PORT_INFO = {
     'COM3': {
