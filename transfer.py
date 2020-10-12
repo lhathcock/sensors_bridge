@@ -4,8 +4,7 @@ import os
 import serial
 import glob
 import traceback
-from datetime import datetime
-
+from datetime import datetime, timezone
 from urllib.parse import urlencode
 import requests
 from config import USERNAME, PASSWORD, SERVER_LOGIN, SERVER, PORT_INFO, DATA_PATH
@@ -109,6 +108,8 @@ def send_temp_files_by_com(com):
         return
     name = PORT_INFO[com]['name']
     temp_files = glob.glob(DATA_PATH + '/*temp*' + name + '*')
+    header = PORT_INFO[com]['header']
+    header.append('datetime')
     # print (temp_files)
     for temp_file in temp_files:  # get com port from temp file
         if not os.path.exists(temp_file):
@@ -120,16 +121,17 @@ def send_temp_files_by_com(com):
             lines = f.readlines()
 
             for line in lines:
-                data = dict(zip(PORT_INFO[com]['header'],
+                data = dict(zip(header,
                                 line.strip().split(',')))
+
                 send_to_server(com, data)
         msg2 = 'Completed sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg2)
         print(msg_with_time)
-        try:
-            os.remove(temp_file)  # delete file after all data is sent
-        except:  # error may happen when deleting file being read so pass it
-            pass
+        # try:
+        #     os.remove(temp_file) # delete file after all data is sent
+        # except:# error may happen when deleting file being read so pass it
+        #     pass
 
 
 def send_temp_files():
@@ -148,6 +150,8 @@ def send_temp_files():
             com = coms[0]
         else:
             continue  # because it is not a comp file
+        header = PORT_INFO[com]['header']
+        header.append('datetime')
         msg = 'Sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg)
         # print(msg_with_time)
@@ -155,7 +159,7 @@ def send_temp_files():
             lines = f.readlines()
 
             for line in lines:
-                data = dict(zip(PORT_INFO[com]['header'],
+                data = dict(zip(header,
                                 line.strip().split(',')))
                 send_to_server(com, data)
         msg2 = 'Completed sending backup {}'.format(temp_file)
@@ -194,22 +198,26 @@ def read_com(com):
             a_serial.write(b'SetAvg=2\r\n')
             a_serial.write(b'Start\r\n')
         while True:
+            utc_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S.%f")
             c = a_serial.readline()
             row = re.split(PORT_INFO[com]['separator'], c.decode().strip())
             if len(row) < 4:
                 continue
             data = dict(zip(PORT_INFO[com]['header'], row))
+
+            data['datetime'] = utc_time
             if SESSION is not None:
                 send_to_server(com, data)
             else:
                 # print ("SESSION ", SESSION, com)
-                save_to_temp_file(com, row)
+                print(data)
+                save_to_temp_file(com, data.values())
                 show_no_internet_error = connect_to_server(com, show_no_internet_error)
                 if show_no_internet_error:  # there is connection
                     # send data that was not sent due to internet problem
                     send_temp_files_by_com(com)
 
-            save_to_file(com, row)
+            save_to_file(com, data.values())
     except:
         msg_with_time = create_log(traceback.format_exc())
         print(msg_with_time)
