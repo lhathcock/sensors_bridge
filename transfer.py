@@ -128,10 +128,10 @@ def send_temp_files_by_com(com):
         msg2 = 'Completed sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg2)
         print(msg_with_time)
-        # try:
-        #     os.remove(temp_file) # delete file after all data is sent
-        # except:# error may happen when deleting file being read so pass it
-        #     pass
+        try:
+            os.remove(temp_file)  # delete file after all data is sent
+        except:  # error may happen when deleting file being read so pass it
+            pass
 
 
 def send_temp_files():
@@ -210,7 +210,7 @@ def read_com(com):
                 send_to_server(com, data)
             else:
                 # print ("SESSION ", SESSION, com)
-                print(data)
+                # print(data)
                 save_to_temp_file(com, data.values())
                 show_no_internet_error = connect_to_server(com, show_no_internet_error)
                 if show_no_internet_error:  # there is connection
