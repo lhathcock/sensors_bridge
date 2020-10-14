@@ -11,7 +11,16 @@ import traceback
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 import requests
-from config import USERNAME, PASSWORD, SERVER_LOGIN, SERVER, PORT_INFO, DATA_PATH, LAN_HOST, LAN_PORT
+from config import (USERNAME,
+                    PASSWORD,
+                    SERVER_LOGIN,
+                    SERVER,
+                    PORT_INFO,
+                    DATA_PATH,
+                    LAN_HOST,
+                    LAN_PORT,
+                    GPS_HEADERS
+                    )
 
 SESSION = None
 
@@ -250,13 +259,12 @@ def read_nmea(file_path):
         for i, line in enumerate(data_file.readlines()):
             if len(line.strip()) < 1:
                 continue
-            # print (i, line)
-            try:
-                msg = pynmea2.parse(line, check=False)
-                print(msg)
-            except pynmea2.ParseError as e:
-                print('Parse error: {}'.format(e))
-                continue
+            if line.startswith('$'):
+                row = line.split(',')
+                header = GPS_HEADERS[row[0]]
+
+
+
 
 
 read_nmea('D:\MSU\watermonitor\sensors_bridge\data\gps.txt')

@@ -1,7 +1,7 @@
-SERVER='https://water.geosci.msstate.edu/monitoradmin/'
+SERVER = 'https://water.geosci.msstate.edu/monitoradmin/'
 SERVER_LOGIN = "https://water.geosci.msstate.edu/monitoradmin/signin"
-USERNAME='msuseatracboat'
-PASSWORD='44dffA33tv'
+USERNAME = 'msuseatracboat'
+PASSWORD = '44dffA33tv'
 DATA_PATH = r'C:\Users\User\Desktop\sensors_bridge\data'
 PORT_INFO = {
     'COM3': {
@@ -11,7 +11,7 @@ PORT_INFO = {
         'header': ['start', 'year', 'month', 'day', 'hour',
                    'minute', 'second', 'zero_ad', 'current_ad', 'measured_co2',
                    'avarage_irga_temperature', 'humidity', 'humidity_sensor_temperature',
-                   'gas_stream_pressure','igr_detector_temperature']
+                   'gas_stream_pressure', 'igr_detector_temperature']
     },
     'COM4': {
         'byte_size': 48, 'baud_rate': 19200,
@@ -49,3 +49,14 @@ PORT_INFO = {
 }
 LAN_HOST = "10.1.20.88"
 LAN_PORT = 50000
+
+GPS_HEADERS = {
+    '$HCHDG': ['magnetic_heading', 'magnetic_deviation',
+               'deviation_direction', 'magnetic_variation', 'variation_direction'],
+    '$GPGGA': ['utc_time','latitude','latitude_direction',
+               'longitude', 'longitude_direction','gps_quality',
+               'number_of_satellites','hdop','altitude', 'nodata1',
+               'geoidal_separation', 'nodata2','age', 'station_id'],
+    '$VMVHW': [],
+    '$YXXDR': []
+}
