@@ -1,6 +1,8 @@
 import re
 import time
 import os
+
+import pynmea2
 import serial
 import socket
 #import sys
@@ -184,23 +186,18 @@ def delete_old_files():
             print(msg_with_time)
 
 
-def connect_to_lan_via_socket(LAN_HOST,LAN_PORT):  #create a TCP/IP socket
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_address = (LAN_HOST, LAN_PORT)
-    print('connecting to %s port %s',LAN_HOST, LAN_PORT)
-#    while True:
-    try:
-    #    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.connect(server_address)
-       # message=raw_input('Message: ')
-        #if 'message=='quit':'
-        #    break
-    #    sock.sendall(b'')
-        print(str(sock.recvfrom(4096)))
-    except:
-        pass
-    socket.close(server_address)
-
+def read_udp(LAN_HOST,LAN_PORT):  #create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
+    print('connecting to %s port %s'%(LAN_HOST, LAN_PORT))
+    sock.bind(('', LAN_PORT))
+    while True:
+        data, addr = sock.recvfrom(4096)
+        print (data)
+        # try:
+        # msg = pynmea2.parse(data.decode())
+        # print (msg)
+        # except Exception as ex:
+        #     print (ex)
 def read_com(com):
     show_no_internet_error = False
     try:
@@ -245,4 +242,21 @@ def read_com(com):
 # msg_with_time = create_log(msg)
 # print (msg_with_time)
 
-connect_to_lan_via_socket(LAN_HOST,LAN_PORT)
+# read_udp(LAN_HOST,LAN_PORT)
+
+def read_nmea(file_path):
+    with open(file_path, 'r') as data_file:
+
+        for i, line in enumerate(data_file.readlines()):
+            if len(line.strip()) < 1:
+                continue
+            # print (i, line)
+            try:
+                msg = pynmea2.parse(line, check=False)
+                print(msg)
+            except pynmea2.ParseError as e:
+                print('Parse error: {}'.format(e))
+                continue
+
+
+read_nmea('D:\MSU\watermonitor\sensors_bridge\data\gps.txt')
