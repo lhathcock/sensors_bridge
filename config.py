@@ -47,3 +47,5 @@ PORT_INFO = {
         'name': 'dissolvedoxygen'
     }
 }
+LAN_HOST = "10.1.20.88"
+LAN_PORT = 50000

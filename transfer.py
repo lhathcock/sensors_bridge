@@ -2,12 +2,14 @@ import re
 import time
 import os
 import serial
+import socket
+#import sys
 import glob
 import traceback
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 import requests
-from config import USERNAME, PASSWORD, SERVER_LOGIN, SERVER, PORT_INFO, DATA_PATH
+from config import USERNAME, PASSWORD, SERVER_LOGIN, SERVER, PORT_INFO, DATA_PATH, LAN_HOST, LAN_PORT
 
 SESSION = None
 
@@ -182,6 +184,23 @@ def delete_old_files():
             print(msg_with_time)
 
 
+def connect_to_lan_via_socket(LAN_HOST,LAN_PORT):  #create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_address = (LAN_HOST, LAN_PORT)
+    print('connecting to %s port %s',LAN_HOST, LAN_PORT)
+#    while True:
+    try:
+    #    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.connect(server_address)
+       # message=raw_input('Message: ')
+        #if 'message=='quit':'
+        #    break
+    #    sock.sendall(b'')
+        print(str(sock.recvfrom(4096)))
+    except:
+        pass
+    socket.close(server_address)
+
 def read_com(com):
     show_no_internet_error = False
     try:
@@ -225,3 +244,5 @@ def read_com(com):
 # msg = 'Started Sensors Bridge'
 # msg_with_time = create_log(msg)
 # print (msg_with_time)
+
+connect_to_lan_via_socket(LAN_HOST,LAN_PORT)

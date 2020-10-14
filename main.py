@@ -1,5 +1,5 @@
 from multiprocessing import Process
-from transfer import read_com,create_log, connect_to_server, send_temp_files
+from transfer import read_com,create_log, connect_to_server, send_temp_files, connect_to_lan_via_socket
 from config import PORT_INFO
 
 
