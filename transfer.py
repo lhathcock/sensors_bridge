@@ -1,26 +1,22 @@
 import re
 import time
 import os
-
-import pynmea2
 import serial
 import socket
-#import sys
 import glob
 import traceback
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 import requests
-from config import (USERNAME,
-                    PASSWORD,
-                    SERVER_LOGIN,
-                    SERVER,
-                    PORT_INFO,
-                    DATA_PATH,
-                    LAN_HOST,
-                    LAN_PORT,
-                    GPS_HEADERS
-                    )
+from config import (
+    USERNAME,
+    PASSWORD,
+    SERVER_LOGIN,
+    SERVER,
+    PORT_INFO,
+    DATA_PATH,
+    LAN_PORT
+)
 
 SESSION = None
 
@@ -195,18 +191,52 @@ def delete_old_files():
             print(msg_with_time)
 
 
-def read_udp(LAN_HOST,LAN_PORT):  #create a TCP/IP socket
+def read_udp():
+    show_no_internet_error = False
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-    print('connecting to %s port %s'%(LAN_HOST, LAN_PORT))
     sock.bind(('', LAN_PORT))
     while True:
-        data, addr = sock.recvfrom(4096)
-        print (data)
-        # try:
-        # msg = pynmea2.parse(data.decode())
-        # print (msg)
-        # except Exception as ex:
-        #     print (ex)
+        data_b, addr = sock.recvfrom(4096)
+        utc_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S.%f")
+        data_str = data_b.decode()
+        if '$' or '*' not in data_str:
+            continue
+
+        row = data_str.rstrip('$').split('*')[0].split(',')
+        if len(row) > 0:
+            if row[0] in PORT_INFO.keys():
+                data = dict(zip(PORT_INFO[row[0]]['header'], row[1:]))
+
+                if row[0] == 'GPRMC':
+                    process_location(data)
+                data['datetime'] = utc_time
+                manage_data(data, row[0], show_no_internet_error)
+                print(data)
+
+
+def process_location(data):
+    # convert nmea lat lon to decimal degrees.
+    # dd + mm.mmmm/60 for latitude
+    # ddd + mm.mmmm/60 for longitude
+    lat_hemi = 1
+    lon_hemi = 1
+    if data.get('latitude_direction') == 'S':
+        lat_hemi = -1
+    if data.get('longitude_direction') == 'W':
+        lon_hemi = -1
+    lat_string = data.get('latitude')
+    lat_degs = int(lat_string[0:2])
+    lat_mins = float(lat_string[2:])
+    lat = (lat_degs + (lat_mins / 60)) * lat_hemi
+    # Longitude
+    lon_string = data.get('longitude')
+    lon_degs = int(lon_string[0:3])
+    lon_mins = float(lon_string[3:])
+    lon = (lon_degs + (lon_mins / 60)) * lon_hemi
+    data['latitude'] = lat
+    data['longitude'] = lon
+
+
 def read_com(com):
     show_no_internet_error = False
     try:
@@ -231,40 +261,22 @@ def read_com(com):
             data = dict(zip(PORT_INFO[com]['header'], row))
 
             data['datetime'] = utc_time
-            if SESSION is not None:
-                send_to_server(com, data)
-            else:
-                # print ("SESSION ", SESSION, com)
-                # print(data)
-                save_to_temp_file(com, data.values())
-                show_no_internet_error = connect_to_server(com, show_no_internet_error)
-                if show_no_internet_error:  # there is connection
-                    # send data that was not sent due to internet problem
-                    send_temp_files_by_com(com)
+            manage_data(data, com, show_no_internet_error)
 
-            save_to_file(com, data.values())
     except:
         msg_with_time = create_log(traceback.format_exc())
         print(msg_with_time)
-#
-# msg = 'Started Sensors Bridge'
-# msg_with_time = create_log(msg)
-# print (msg_with_time)
-
-# read_udp(LAN_HOST,LAN_PORT)
-
-def read_nmea(file_path):
-    with open(file_path, 'r') as data_file:
-
-        for i, line in enumerate(data_file.readlines()):
-            if len(line.strip()) < 1:
-                continue
-            if line.startswith('$'):
-                row = line.split(',')
-                header = GPS_HEADERS[row[0]]
 
 
-
-
-
-read_nmea('D:\MSU\watermonitor\sensors_bridge\data\gps.txt')
+def manage_data(data, port_name, show_no_internet_error):
+    if SESSION is not None:
+        send_to_server(port_name, data)
+    else:
+        # print ("SESSION ", SESSION, com)
+        # print(data)
+        save_to_temp_file(port_name, data.values())
+        show_no_internet_error = connect_to_server(port_name, show_no_internet_error)
+        if show_no_internet_error:  # there is connection
+            # send data that was not sent due to internet problem
+            send_temp_files_by_com(port_name)
+    save_to_file(port_name, data.values())
