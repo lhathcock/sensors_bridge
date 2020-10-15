@@ -9,14 +9,11 @@ from datetime import datetime, timezone
 from urllib.parse import urlencode
 import requests
 from config import (
-    USERNAME,
-    PASSWORD,
-    SERVER_LOGIN,
-    SERVER,
     PORT_INFO,
     DATA_PATH,
     LAN_PORT
 )
+from connection import USERNAME, PASSWORD, SERVER_LOGIN, SERVER
 
 SESSION = None
 
