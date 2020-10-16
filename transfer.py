@@ -5,6 +5,7 @@ import serial
 import socket
 import glob
 import traceback
+from collections import OrderedDict
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 import requests
@@ -187,32 +188,43 @@ def delete_old_files():
             msg_with_time = create_log(msg)
             print(msg_with_time)
 
+def filter_data(data, port_code):
+    new_dict = {}
+    for key, value in data.items():
+        if key not in PORT_INFO[port_code]['exclude']:
+            new_dict[key] = value
+    return new_dict
 
-def read_udp():
+def read_udp(code):
     show_no_internet_error = False
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock.bind(('', LAN_PORT))
+    # program_starts = time.time()
     while True:
         data_b, addr = sock.recvfrom(4096)
         utc_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S.%f")
         data_str = data_b.decode()
-        if '$' or '*' not in data_str:
+        # now = time.time()
+        if '$' not in data_str:
             continue
 
-        row = data_str.rstrip('$').split('*')[0].split(',')
+        row = data_str.lstrip('$').split('*')[0].split(',')
+        # print (curr_sec_diff)
+        # prev_sec = now - program_starts
         if len(row) > 0:
-            if row[0] in PORT_INFO.keys():
-                data = dict(zip(PORT_INFO[row[0]]['header'], row[1:]))
-
+            if row[0] == code:
+                # print("{0} {1}".format(now - program_starts, row[0]))
+                data = dict(zip(PORT_INFO[code]['header'], row[1:]))
+                data['datetime'] = utc_time
                 if row[0] == 'GPRMC':
                     process_location(data)
-                data['datetime'] = utc_time
+                data = filter_data(data, row[0])
                 manage_data(data, row[0], show_no_internet_error)
-                print(data)
-
 
 def process_location(data):
     # convert nmea lat lon to decimal degrees.
+    # ddmm.mmmm lat
+    # dddmm.mmmm lon
     # dd + mm.mmmm/60 for latitude
     # ddd + mm.mmmm/60 for longitude
     lat_hemi = 1

@@ -1,21 +1,35 @@
 DATA_PATH = r'C:\Users\User\Desktop\sensors_bridge\data'
 PORT_INFO = {
-
     'GPRMC': {
         'name': 'gpsposition',
-        'header': ['timestamp', 'status', 'latitude', 'latitude_direction', 'longitude',
-                   'longitude_direction', 'speed_over_ground', 'true_course', 'date',
-                   'magnetic_variation', 'magnetic_variation_direction', 'mode_indicator']
+        'header': [
+            'timestamp', 'status', 'latitude', 'latitude_direction', 'longitude',
+            'longitude_direction', 'speed_over_ground', 'true_course', 'date',
+            'magnetic_variation', 'magnetic_variation_direction', 'mode_indicator'
+        ],
+    'exclude':[]
     },
-
     'WIMDA': {
         'name': 'meteorology',
-        'header': ['barometric_pressure_inches', 'inches_of_mercury', 'barometric_pressure_bars',
-                   'bars', 'air_temperature',
-                   'air_degrees', 'water_temperature', 'air_degrees', 'relative_humidity',
-                   'absolute_humidity', 'dew_point', 'dew_degrees',
-                   'wind_direction_true', 'true', 'wind_direction_magnetic',
-                   'wind_speed_knots', 'wind_knots', 'wind_speed_mps', 'meter_per_second']
+        'header': [
+            'barometric_pressure_inches', 'inches_of_mercury', 'barometric_pressure_bars',
+            'bars', 'air_temperature', 'air_degrees', 'water_temperature', 'air_degrees',
+            'relative_humidity', 'absolute_humidity', 'dew_point', 'dew_degrees',
+            'wind_direction_true', 'true', 'wind_direction_magnetic',
+            'wind_speed_knots', 'wind_knots', 'wind_speed_meter_per_second', 'meter_per_second'
+        ],
+        'exclude':['inches_of_mercury', 'bars','air_degrees', 'water_temperature', 'air_degrees',
+            'relative_humidity', 'absolute_humidity', 'dew_point', 'dew_degrees',
+            'wind_direction_true', 'true', 'wind_direction_magnetic',
+            'wind_speed_knots', 'wind_knots', 'wind_speed_mps', 'meter_per_second']
+    },
+    'WIMWD': {
+        'name': 'wind',
+        'header': [
+            'wind_direction_true','t', 'wind_direction_magnetic', 'm','wind_speed_knots',
+            'n', 'wind_speed_meter_per_second', 'mps'
+        ],
+        'exclude': ['t','m','n','mps']
     },
     'COM3': {
         'name': 'co2procv',
@@ -24,16 +38,18 @@ PORT_INFO = {
         'header': ['start', 'year', 'month', 'day', 'hour',
                    'minute', 'second', 'zero_ad', 'current_ad', 'measured_co2',
                    'avarage_irga_temperature', 'humidity', 'humidity_sensor_temperature',
-                   'gas_stream_pressure', 'igr_detector_temperature']
+                   'gas_stream_pressure', 'igr_detector_temperature'],
+'exclude':[]
     },
     'COM4': {
         'name': 'ecotriplet1',
 
-                'byte_size': 48, 'baud_rate': 19200,
+        'byte_size': 48, 'baud_rate': 19200,
         'separator': r'\t+',
         'header': ['date', 'time', 'wavelength1', 'chl_raw',
                    'wavelength2', 'peryth_raw', 'wavelength3',
-                   'pcyan_raw', 'wavelength4']
+                   'pcyan_raw', 'wavelength4'],
+'exclude':[]
     },
     'COM5': {
         'name': 'ecotriplet2',
@@ -41,7 +57,8 @@ PORT_INFO = {
         'separator': r'\t+',
         'header': ['date', 'time', 'wavelength1', 'bb_470_raw',
                    'wavelength2', 'bb_532_raw', 'wavelength3',
-                   'bb_650_raw', 'wavelength4']
+                   'bb_650_raw', 'wavelength4'],
+'exclude':[]
     },
     'COM6': {
         'name': 'ecotriplet3',
@@ -50,14 +67,17 @@ PORT_INFO = {
         'header': ['date', 'time', 'wavelength1',
                    'turbidity_595_nm_raw', 'wavelength2',
                    'turbidity_700_nm_raw', 'wavelength3',
-                   'cdom_460_nm_raw', 'wavelength4']
+                   'cdom_460_nm_raw', 'wavelength4'],
+'exclude':[]
     },
     'COM7': {
         'name': 'dissolvedoxygen',
         'byte_size': 72, 'baud_rate': 9600,
         'separator': r',',
-        'header': ['raw_phase_delay', 'raw_thermistor_voltage',
-                   'oxygen_ml_l', 'temperature']
+        'header': [
+            'raw_phase_delay', 'raw_thermistor_voltage', 'oxygen_ml_l', 'temperature'
+        ],
+'exclude':[]
     }
 }
 LAN_HOST = "10.1.20.88"
