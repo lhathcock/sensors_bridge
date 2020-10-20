@@ -78,5 +78,5 @@ PORT_INFO = {
 'exclude':[]
     }
 }
-LAN_HOST = "10.1.20.88"
 LAN_PORT = 50000
+REMOVE_FILES_OLDER_THAN=3

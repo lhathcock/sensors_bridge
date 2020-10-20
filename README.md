@@ -18,7 +18,7 @@ Configuration
 In config.py set:
 - `DATA_PATH` to your preferred output location
 - Change COM3, COM4, COM5, COM6, COM7 to their respective port in which they are connected to your computer.
-
+- If you have data streamed through a UDP port, modify `LAN_PORT`
 ---
 Create connection.py and fill out the following:
 
@@ -27,10 +27,16 @@ Create connection.py and fill out the following:
 - USERNAME = 'someusername'
 - PASSWORD = 'somepassword'
 
+
 Usage
 ---
 - Run main.py or double click `start_sensors_bridge.bat` file. It will start reading and saving data to the DATA_PATH.
 - You can run the script as a schedule task using `sensors_bridge_task.xml`.
+
+To Do
+---
+
+- Create GUI and Windows installer
 
 ## App Info
 

@@ -1,3 +1,4 @@
+import csv
 import re
 import time
 import os
@@ -12,7 +13,8 @@ import requests
 from config import (
     PORT_INFO,
     DATA_PATH,
-    LAN_PORT
+    LAN_PORT,
+    REMOVE_FILES_OLDER_THAN
 )
 from connection import USERNAME, PASSWORD, SERVER_LOGIN, SERVER
 
@@ -61,7 +63,7 @@ def create_log(message, show_message=True):
     with open(file_path, 'a') as data_file:
         data_file.write(msg)
     if show_message:
-        print (msg.strip())
+        print(msg.strip())
     return msg.strip()
 
 
@@ -81,10 +83,17 @@ def read_file(file_path):
 def save_to_file(com, data):
     now = datetime.now()
     dt_string = now.strftime("%d_%m_%Y")
-    file_name = '{}_{}.txt'.format(dt_string, PORT_INFO[com]['name'])
+    file_name = '{}_{}.csv'.format(dt_string, PORT_INFO[com]['name'])
     file_path = os.path.join(DATA_PATH, file_name)
+    add_header = False
+    if not os.path.isfile(file_path):
+        with open(file_path, 'w', newline='') as csvfile:
+            wr = csv.writer(csvfile)
+            wr.writerow(data.keys())
+
     with open(file_path, 'a') as data_file:
-        data_file.write(','.join(data) + '\n')
+        wr = csv.writer(data_file)
+        wr.writerow(data.values())
 
 
 def save_to_temp_file(com, data):
@@ -98,9 +107,7 @@ def save_to_temp_file(com, data):
 
 def send_to_server(com, data):
     global SESSION
-    # print(SESSION)
     url = '{}{}'.format(SERVER, PORT_INFO[com]['name'])
-    # print (url)
     response = SESSION.post(url, data=data)
     # print (response)
     if response.status_code != 200:
@@ -114,7 +121,6 @@ def send_to_server(com, data):
     else:
         # if com == 'GPRMC':
         # print ('Sent {} {}'.format(com, data))
-
 
         return True
 
@@ -134,7 +140,7 @@ def send_temp_files_by_com(com):
         msg = 'Sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg)
         print(msg_with_time)
-        results =[]
+        results = []
         with open(temp_file, "r") as f:
             lines = f.readlines()
 
@@ -154,6 +160,7 @@ def send_temp_files_by_com(com):
             except:  # error may happen when deleting file being read so pass it
                 pass
     header.remove('datetime')
+
 
 def send_temp_files():
     global SESSION
@@ -197,11 +204,12 @@ def delete_old_files():
     txt_data = glob.glob('{}\\*.txt'.format(DATA_PATH))
     for f in txt_data:
         creation_time = os.path.getctime(f)
-        if (current_time - creation_time) // (24 * 3600) >= 3:
+        if (current_time - creation_time) // (24 * 3600) >= REMOVE_FILES_OLDER_THAN:
             os.unlink(f)
             msg = '{} removed'.format(f)
             msg_with_time = create_log(msg)
             print(msg_with_time)
+
 
 def filter_data(data, port_code):
     new_dict = {}
@@ -209,6 +217,7 @@ def filter_data(data, port_code):
         if key not in PORT_INFO[port_code]['exclude']:
             new_dict[key] = value
     return new_dict
+
 
 def read_udp():
     show_no_internet_error = False
@@ -229,7 +238,7 @@ def read_udp():
         # prev_sec = now - program_starts
         if len(row) > 0:
             if row[0] in PORT_INFO.keys():
-            # if row[0] == com:
+                # if row[0] == com:
                 code = row[0]
 
                 if len(row[1:]) != len(PORT_INFO[code]['header']):
@@ -243,6 +252,7 @@ def read_udp():
                 data = filter_data(data, row[0])
                 # print (data)
                 manage_data(data, row[0], show_no_internet_error)
+
 
 def process_location(data):
     # convert nmea lat lon to decimal degrees.
@@ -307,7 +317,7 @@ def read_com(com):
 
     except:
         msg_with_time = create_log(traceback.format_exc())
-        print ('Failed data: ', com, data)
+        print('Failed data: ', com, data)
         # print(msg_with_time)
 
 
@@ -326,4 +336,4 @@ def manage_data(data, port_name, show_no_internet_error):
         if show_no_internet_error:  # there is connection
             # send data that was not sent due to internet problem
             send_temp_files_by_com(port_name)
-    save_to_file(port_name, data.values())
+    save_to_file(port_name, data)
