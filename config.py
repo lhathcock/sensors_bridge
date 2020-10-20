@@ -15,21 +15,19 @@ PORT_INFO = {
             'barometric_pressure_inches', 'inches_of_mercury', 'barometric_pressure_bars',
             'bars', 'air_temperature', 'air_degrees', 'water_temperature', 'air_degrees',
             'relative_humidity', 'absolute_humidity', 'dew_point', 'dew_degrees',
-            'wind_direction_true', 'true', 'wind_direction_magnetic',
+            'wind_direction_true', 'true', 'wind_direction_magnetic','magnetic',
             'wind_speed_knots', 'wind_knots', 'wind_speed_meter_per_second', 'meter_per_second'
         ],
+
         'exclude':['inches_of_mercury', 'bars','air_degrees', 'water_temperature', 'air_degrees',
             'relative_humidity', 'absolute_humidity', 'dew_point', 'dew_degrees',
-            'wind_direction_true', 'true', 'wind_direction_magnetic',
+            'wind_direction_true', 'true', 'wind_direction_magnetic','magnetic',
             'wind_speed_knots', 'wind_knots', 'wind_speed_mps', 'meter_per_second']
     },
-    'WIMWD': {
+    'WIMWV': {
         'name': 'wind',
-        'header': [
-            'wind_direction_true','t', 'wind_direction_magnetic', 'm','wind_speed_knots',
-            'n', 'wind_speed_meter_per_second', 'mps'
-        ],
-        'exclude': ['t','m','n','mps']
+        'header': ['wind_angle', 'reference', 'wind_speed', 'wind_speed_units','status'],
+        'exclude': []
     },
     'COM3': {
         'name': 'co2procv',

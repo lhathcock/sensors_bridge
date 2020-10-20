@@ -5,7 +5,7 @@ import serial
 import socket
 import glob
 import traceback
-from collections import OrderedDict
+
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 import requests
@@ -45,13 +45,13 @@ def connect_to_server(com, show_internet_error=True):
 
             msg_with_time = create_log(msg)
             print(msg_with_time)
-        SESSION = None
-        return False
+            SESSION = None
+            return False
 
     return True
 
 
-def create_log(message):
+def create_log(message, show_message=True):
     now = datetime.now()
     dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
     dt_name_str = now.strftime("%d_%m_%Y")
@@ -60,12 +60,14 @@ def create_log(message):
     msg = '{} {}\n'.format(dt_string, message)
     with open(file_path, 'a') as data_file:
         data_file.write(msg)
+    if show_message:
+        print (msg.strip())
     return msg.strip()
 
 
 def read_file(file_path):
     thefile = open(file_path)
-    print(os.SEEK_END)
+    # print(os.SEEK_END)
     thefile.seek(0, os.SEEK_END)  # End-of-file
     while True:
 
@@ -98,8 +100,9 @@ def send_to_server(com, data):
     global SESSION
     # print(SESSION)
     url = '{}{}'.format(SERVER, PORT_INFO[com]['name'])
+    # print (url)
     response = SESSION.post(url, data=data)
-
+    # print (response)
     if response.status_code != 200:
         msg = 'Error: {} Failed to send {} at port {}. Saving it to local file.'.format(
             response.status_code, PORT_INFO[com]['name'], com
@@ -107,6 +110,13 @@ def send_to_server(com, data):
 
         msg_with_time = create_log(msg)
         print(msg_with_time)
+        return False
+    else:
+        # if com == 'GPRMC':
+        # print ('Sent {} {}'.format(com, data))
+
+
+        return True
 
 
 def send_temp_files_by_com(com):
@@ -123,7 +133,8 @@ def send_temp_files_by_com(com):
             continue
         msg = 'Sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg)
-        # print(msg_with_time)
+        print(msg_with_time)
+        results =[]
         with open(temp_file, "r") as f:
             lines = f.readlines()
 
@@ -131,15 +142,18 @@ def send_temp_files_by_com(com):
                 data = dict(zip(header,
                                 line.strip().split(',')))
 
-                send_to_server(com, data)
+                result = send_to_server(com, data)
+                results.append(result)
         msg2 = 'Completed sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg2)
-        print(msg_with_time)
-        try:
-            os.remove(temp_file)  # delete file after all data is sent
-        except:  # error may happen when deleting file being read so pass it
-            pass
-
+        # print(msg_with_time)
+        # print (results)
+        if False not in results:
+            try:
+                os.remove(temp_file)  # delete file after all data is sent
+            except:  # error may happen when deleting file being read so pass it
+                pass
+    header.remove('datetime')
 
 def send_temp_files():
     global SESSION
@@ -166,8 +180,7 @@ def send_temp_files():
             lines = f.readlines()
 
             for line in lines:
-                data = dict(zip(header,
-                                line.strip().split(',')))
+                data = dict(zip(header, line.strip().split(',')))
                 send_to_server(com, data)
         msg2 = 'Completed sending backup {}'.format(temp_file)
         msg_with_time = create_log(msg2)
@@ -176,11 +189,13 @@ def send_temp_files():
             os.remove(temp_file)  # delete file after all data is sent
         except:  # error may happen when deleting file being read so pass it
             pass
+        header.remove('datetime')
 
 
 def delete_old_files():
     current_time = time.time()
-    for f in os.listdir(DATA_PATH):
+    txt_data = glob.glob('{}\\*.txt'.format(DATA_PATH))
+    for f in txt_data:
         creation_time = os.path.getctime(f)
         if (current_time - creation_time) // (24 * 3600) >= 3:
             os.unlink(f)
@@ -195,9 +210,10 @@ def filter_data(data, port_code):
             new_dict[key] = value
     return new_dict
 
-def read_udp(code):
+def read_udp():
     show_no_internet_error = False
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
+    connect_to_server('Ancillary')
     sock.bind(('', LAN_PORT))
     # program_starts = time.time()
     while True:
@@ -209,16 +225,23 @@ def read_udp(code):
             continue
 
         row = data_str.lstrip('$').split('*')[0].split(',')
-        # print (curr_sec_diff)
+        # print (row)
         # prev_sec = now - program_starts
         if len(row) > 0:
-            if row[0] == code:
+            if row[0] in PORT_INFO.keys():
+            # if row[0] == com:
+                code = row[0]
+
+                if len(row[1:]) != len(PORT_INFO[code]['header']):
+                    continue
                 # print("{0} {1}".format(now - program_starts, row[0]))
                 data = dict(zip(PORT_INFO[code]['header'], row[1:]))
                 data['datetime'] = utc_time
+                # print (data)
                 if row[0] == 'GPRMC':
                     process_location(data)
                 data = filter_data(data, row[0])
+                # print (data)
                 manage_data(data, row[0], show_no_internet_error)
 
 def process_location(data):
@@ -234,16 +257,23 @@ def process_location(data):
     if data.get('longitude_direction') == 'W':
         lon_hemi = -1
     lat_string = data.get('latitude')
-    lat_degs = int(lat_string[0:2])
-    lat_mins = float(lat_string[2:])
-    lat = (lat_degs + (lat_mins / 60)) * lat_hemi
-    # Longitude
-    lon_string = data.get('longitude')
-    lon_degs = int(lon_string[0:3])
-    lon_mins = float(lon_string[3:])
-    lon = (lon_degs + (lon_mins / 60)) * lon_hemi
-    data['latitude'] = lat
-    data['longitude'] = lon
+    try:
+        lat_degs = int(lat_string[0:2])
+        lat_mins = float(lat_string[2:])
+        lat = (lat_degs + (lat_mins / 60)) * lat_hemi
+        # Longitude
+        lon_string = data.get('longitude')
+        # print (lon_string)
+        lon_degs = int(lon_string[0:3])
+        lon_mins = float(lon_string[3:])
+        lon = (lon_degs + (lon_mins / 60)) * lon_hemi
+        data['latitude'] = str(lat)
+        data['longitude'] = str(lon)
+    except:
+        msg_with_time = create_log(traceback.format_exc())
+        print(msg_with_time)
+        data['latitude'] = 'null'
+        data['longitude'] = 'null'
 
 
 def read_com(com):
@@ -265,23 +295,31 @@ def read_com(com):
             utc_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S.%f")
             c = a_serial.readline()
             row = re.split(PORT_INFO[com]['separator'], c.decode().strip())
-            if len(row) < 4:
+
+            if len(row) != len(PORT_INFO[com]['header']):
                 continue
             data = dict(zip(PORT_INFO[com]['header'], row))
 
             data['datetime'] = utc_time
+            # print (row, data)
             manage_data(data, com, show_no_internet_error)
+            # print (data)
 
     except:
         msg_with_time = create_log(traceback.format_exc())
-        print(msg_with_time)
+        print ('Failed data: ', com, data)
+        # print(msg_with_time)
 
 
 def manage_data(data, port_name, show_no_internet_error):
+    # print (SESSION,port_name,  data )
     if SESSION is not None:
+        # if port_name == 'GPRMC':
+        # print ('sending 22', port_name, data)
         send_to_server(port_name, data)
     else:
-        # print ("SESSION ", SESSION, com)
+        # if port_name == 'GPRMC':
+        #     print ("SESSION ", SESSION, port_name)
         # print(data)
         save_to_temp_file(port_name, data.values())
         show_no_internet_error = connect_to_server(port_name, show_no_internet_error)
