@@ -1,0 +1,173 @@
+{
+  "basic_options": {
+    "data_path": "C:/Users/User/Desktop/data",
+    "file_keep_limit": 3,
+    "udp_port": 50000
+  },
+  "server_options": {
+    "server": "https://water.geosci.msstate.edu/monitor/",
+    "server_login": "https://water.geosci.msstate.edu/login",
+    "username": "",
+    "password": "",
+    "send_data": false
+  },
+  "sensors_config": [
+    {
+      "label": "Co2ProCV",
+      "name": "co2procv",
+      "type": "UDP",
+      "code": "",
+      "header": "start,year,month,day,hour,minute,second,zero_ad,current_ad,measured_co2,avarage_irga_temperature,humidity,humidity_sensor_temperature,gas_stream_pressure,igr_detector_temperature",
+      "exclude": ""
+    },
+    {
+      "label": "Ecotriplet 1",
+      "name": "ecotriplet1",
+      "type": "UDP",
+      "code": "",
+      "header": "date,time,wavelength1,chl_raw,wavelength2,peryth_raw,wavelength3,pcyan_raw,wavelength4",
+      "exclude": ""
+    },
+    {
+      "label": "Ecotriplet 2",
+      "name": "ecotriplet2",
+      "type": "UDP",
+      "code": "",
+      "header": "date,time,wavelength1,bb_470_raw,wavelength2,bb_532_raw,wavelength3,bb_650_raw,wavelength4",
+      "exclude": ""
+    },
+    {
+      "label": "Ecotriplet 3",
+      "name": "ecotriplet3",
+      "type": "UDP",
+      "code": "",
+      "header": "date,time,wavelength1,turbidity_595_nm_raw,wavelength2,turbidity_700_nm_raw,wavelength3,cdom_460_nm_raw,wavelength4",
+      "exclude": ""
+    },
+    {
+      "label": "Dissolved Oxygen",
+      "name": "dissolvedoxygen",
+      "type": "UDP",
+      "code": "",
+      "header": "raw_phase_delay,raw_thermistor_voltage,oxygen_ml_l,temperature",
+      "exclude": ""
+    },
+    {
+      "label": "GPS Position",
+      "name": "gpsposition",
+      "type": "UDP",
+      "code": "GPRMC",
+      "header": "timestamp,status,latitude,latitude_direction,longitude,longitude_direction,speed_over_ground,true_course,date,magnetic_variation,magnetic_variation_direction,mode_indicator",
+      "exclude": ""
+    },
+    {
+      "label": "Meteorology",
+      "name": "meteorology",
+      "type": "UDP",
+      "code": "WIMDA",
+      "header": "barometric_pressure_inches,inches_of_mercury,barometric_pressure_bars,bars,air_temperature,air_degrees,water_temperature,air_degrees,relative_humidity,absolute_humidity,dew_point,dew_degrees,wind_direction_true,true,wind_direction_magnetic,magnetic,wind_speed_knots,wind_knots,wind_speed_meter_per_second,meter_per_second",
+      "exclude": "inches_of_mercury,bars,air_degrees,water_temperature,air_degrees,relative_humidity,absolute_humidity,dew_point,dew_degrees,wind_direction_true,true,wind_direction_magnetic,magnetic,wind_speed_knots,wind_knots,wind_speed_mps,meter_per_second"
+    },
+    {
+      "label": "Wind",
+      "name": "wind",
+      "type": "UDP",
+      "code": "WIMWV",
+      "header": "wind_angle,reference,wind_speed,wind_speed_units,status",
+      "exclude": ""
+    }
+  ],
+  "default_config": {
+    "ecotriplet2": {
+      "separator": "\t+",
+      "baud_rate": 19200,
+      "byte_size": 44
+    },
+    "co2procv": {
+      "separator": ",",
+      "baud_rate": 19200,
+      "byte_size": 72
+    },
+    "dissolvedoxygen": {
+      "separator": ",",
+      "baud_rate": 9600,
+      "byte_size": 72
+    },
+    "ecotriplet1": {
+      "separator": "\t+",
+      "baud_rate": 19200,
+      "byte_size": 48
+    },
+    "ecotriplet3": {
+      "separator": "\t+",
+      "baud_rate": 19200,
+      "byte_size": 45
+    }
+  },
+  "default_sensors_config": [
+    {
+      "exclude": "",
+      "type": "COM port",
+      "header": "start,year,month,day,hour,minute,second,zero_ad,current_ad,measured_co2,avarage_irga_temperature,humidity,humidity_sensor_temperature,gas_stream_pressure,igr_detector_temperature",
+      "code": "COM3",
+      "label": "Co2ProCV",
+      "name": "co2procv"
+    },
+    {
+      "exclude": "",
+      "type": "COM port",
+      "header": "date,time,wavelength1,chl_raw,wavelength2,peryth_raw,wavelength3,pcyan_raw,wavelength4",
+      "code": "COM4",
+      "label": "Ecotriplet 1",
+      "name": "ecotriplet1"
+    },
+    {
+      "exclude": "",
+      "type": "COM port",
+      "header": "date,time,wavelength1,bb_470_raw,wavelength2,bb_532_raw,wavelength3,bb_650_raw,wavelength4",
+      "code": "COM5",
+      "label": "Ecotriplet 2",
+      "name": "ecotriplet2"
+    },
+    {
+      "exclude": "",
+      "type": "COM port",
+      "header": "date,time,wavelength1,turbidity_595_nm_raw,wavelength2,turbidity_700_nm_raw,wavelength3,cdom_460_nm_raw,wavelength4",
+      "code": "COM6",
+      "label": "Ecotriplet 3",
+      "name": "ecotriplet3"
+    },
+    {
+      "exclude": "",
+      "type": "COM port",
+      "header": "raw_phase_delay,raw_thermistor_voltage,oxygen_ml_l,temperature",
+      "code": "COM7",
+      "label": "Dissolved Oxygen",
+      "name": "dissolvedoxygen"
+    },
+    {
+      "exclude": "",
+      "type": "UDP",
+      "header": "timestamp,status,latitude,latitude_direction,longitude,longitude_direction,speed_over_ground,true_course,date,magnetic_variation,magnetic_variation_direction,mode_indicator",
+      "code": "GPRMC",
+      "label": "GPS Position",
+      "name": "gpsposition"
+    },
+    {
+      "exclude": "inches_of_mercury,bars,air_degrees,water_temperature,air_degrees,relative_humidity,absolute_humidity,dew_point,dew_degrees,wind_direction_true,true,wind_direction_magnetic,magnetic,wind_speed_knots,wind_knots,wind_speed_mps,meter_per_second",
+      "type": "UDP",
+      "header": "barometric_pressure_inches,inches_of_mercury,barometric_pressure_bars,bars,air_temperature,air_degrees,water_temperature,air_degrees,relative_humidity,absolute_humidity,dew_point,dew_degrees,wind_direction_true,true,wind_direction_magnetic,magnetic,wind_speed_knots,wind_knots,wind_speed_meter_per_second,meter_per_second",
+      "code": "WIMDA",
+      "label": "Meteorology",
+      "name": "meteorology"
+    },
+    {
+      "exclude": "",
+      "type": "UDP",
+      "header": "wind_angle,reference,wind_speed,wind_speed_units,status",
+      "code": "WIMWV",
+      "label": "Wind",
+      "name": "wind"
+    }
+  ]
+}

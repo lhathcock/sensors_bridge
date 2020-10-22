@@ -4,4 +4,3 @@ env
 .idea
 __pycache__
 connection.py
-config.json
