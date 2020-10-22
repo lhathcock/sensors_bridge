@@ -119,29 +119,28 @@ class Bridge():
                    "Accept": "text/plain"}
         SESSION = requests.Session()
         verify_ssl = False
-        # if self.server_options['server_login'].startswith('https'):
-        #     verify_ssl = True
-        # print (verify_ssl)
+
         try:
             response = SESSION.post(
                 self.server_options['server_login'],
                 data=params, headers=headers, verify=verify_ssl
             )
-        except InsecureRequestWarning as ex:
-            pass
-        # print(response.status_code)
-        if response.status_code != 200:
-            if not show_no_internet_error:
-                msg = 'Error to login {}. {} ({}) data saved ' \
-                      'locally until internet is restored'.format(
-                    response.status_code, sensor['label'], sensor['code'])
+            if response.status_code != 200:
+                if not show_no_internet_error:
+                    msg = 'Error to login {}. {} ({}) data saved ' \
+                          'locally until internet is restored'.format(
+                        response.status_code, sensor['label'], sensor['code'])
 
-                msg_with_time = self.create_log(msg, sensor['name'])
-                print(msg_with_time)
-            SESSION = None
+                    msg_with_time = self.create_log(msg, sensor['name'])
+                    print(msg_with_time)
+                SESSION = None
+                return False
+            return True
+        except:
+            msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
+            print(msg_with_time)
             return False
 
-        return True
 
     # def set_log_box(self, log_box):
     #     self.log_box = log_box
@@ -234,22 +233,27 @@ class Bridge():
         # if self.server_options['server'].startswith('https'):
         #     verify_ssl = True
         # print(verify_ssl)
-        response = SESSION.post(url, data=data, verify=verify_ssl)
-        # print (response.status_code)
-        if response.status_code != 200:
-            msg = 'Error: {} Failed to send {} at port {}. Saving it to local file.'.format(
-                response.status_code, sensor['name'], sensor['code']
-            )
+        try:
+            response = SESSION.post(url, data=data, verify=verify_ssl)
+            if response.status_code != 200:
+                msg = 'Error: {} Failed to send {} at port {}. Saving it to local file.'.format(
+                    response.status_code, sensor['name'], sensor['code']
+                )
 
-            msg_with_time = self.create_log(msg, sensor['name'])
+                msg_with_time = self.create_log(msg, sensor['name'])
+                print(msg_with_time)
+                SESSION = None
+                return False
+            else:
+                # if com == 'GPRMC':
+                # print ('Sent {} {}'.format(sensor['name'], data))
+                return True
+        except:
+            msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
             print(msg_with_time)
-            SESSION = None
             return False
-        else:
-            # if com == 'GPRMC':
-            # print ('Sent {} {}'.format(sensor['name'], data))
+        # print (response.status_code)
 
-            return True
 
     def send_temp_files_by_com(self, sensor):
         global SESSION
