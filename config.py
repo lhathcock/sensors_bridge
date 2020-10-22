@@ -1,34 +1,7 @@
-DATA_PATH = r'C:\Users\User\Desktop\sensors_bridge\data'
+DATA_PATH = r'C:\Users\Wondim\Desktop\sensors_bridge\data'
+LAN_PORT = 50000
+REMOVE_FILES_OLDER_THAN=3
 PORT_INFO = {
-    'GPRMC': {
-        'name': 'gpsposition',
-        'header': [
-            'timestamp', 'status', 'latitude', 'latitude_direction', 'longitude',
-            'longitude_direction', 'speed_over_ground', 'true_course', 'date',
-            'magnetic_variation', 'magnetic_variation_direction', 'mode_indicator'
-        ],
-    'exclude':[]
-    },
-    'WIMDA': {
-        'name': 'meteorology',
-        'header': [
-            'barometric_pressure_inches', 'inches_of_mercury', 'barometric_pressure_bars',
-            'bars', 'air_temperature', 'air_degrees', 'water_temperature', 'air_degrees',
-            'relative_humidity', 'absolute_humidity', 'dew_point', 'dew_degrees',
-            'wind_direction_true', 'true', 'wind_direction_magnetic','magnetic',
-            'wind_speed_knots', 'wind_knots', 'wind_speed_meter_per_second', 'meter_per_second'
-        ],
-
-        'exclude':['inches_of_mercury', 'bars','air_degrees', 'water_temperature', 'air_degrees',
-            'relative_humidity', 'absolute_humidity', 'dew_point', 'dew_degrees',
-            'wind_direction_true', 'true', 'wind_direction_magnetic','magnetic',
-            'wind_speed_knots', 'wind_knots', 'wind_speed_mps', 'meter_per_second']
-    },
-    'WIMWV': {
-        'name': 'wind',
-        'header': ['wind_angle', 'reference', 'wind_speed', 'wind_speed_units','status'],
-        'exclude': []
-    },
     'COM3': {
         'name': 'co2procv',
         'byte_size': 72, 'baud_rate': 19200,
@@ -76,7 +49,34 @@ PORT_INFO = {
             'raw_phase_delay', 'raw_thermistor_voltage', 'oxygen_ml_l', 'temperature'
         ],
 'exclude':[]
-    }
+    },
+    'GPRMC': {
+        'name': 'gpsposition',
+        'header': [
+            'timestamp', 'status', 'latitude', 'latitude_direction', 'longitude',
+            'longitude_direction', 'speed_over_ground', 'true_course', 'date',
+            'magnetic_variation', 'magnetic_variation_direction', 'mode_indicator'
+        ],
+        'exclude': []
+    },
+    'WIMDA': {
+        'name': 'meteorology',
+        'header': [
+            'barometric_pressure_inches', 'inches_of_mercury', 'barometric_pressure_bars',
+            'bars', 'air_temperature', 'air_degrees', 'water_temperature', 'air_degrees',
+            'relative_humidity', 'absolute_humidity', 'dew_point', 'dew_degrees',
+            'wind_direction_true', 'true', 'wind_direction_magnetic', 'magnetic',
+            'wind_speed_knots', 'wind_knots', 'wind_speed_meter_per_second', 'meter_per_second'
+        ],
+
+        'exclude': ['inches_of_mercury', 'bars', 'air_degrees', 'water_temperature', 'air_degrees',
+                    'relative_humidity', 'absolute_humidity', 'dew_point', 'dew_degrees',
+                    'wind_direction_true', 'true', 'wind_direction_magnetic', 'magnetic',
+                    'wind_speed_knots', 'wind_knots', 'wind_speed_mps', 'meter_per_second']
+    },
+    'WIMWV': {
+        'name': 'wind',
+        'header': ['wind_angle', 'reference', 'wind_speed', 'wind_speed_units', 'status'],
+        'exclude': []
+    },
 }
-LAN_PORT = 50000
-REMOVE_FILES_OLDER_THAN=3

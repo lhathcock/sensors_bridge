@@ -2,10 +2,16 @@
 
 > Receives data from water quality sensors - Ecotriplets 1, 2, and 3, dissolved oxygen, and co2procv.
 > It saves data to a folder and sends it to a server.
+>
+>
+## User Installation
 
-## Installation
+- Copy dist folder in this repository and double click SensorsBridge.exe. Keep all files in dist folder together. 
 
-- Install Python 3.6 or later 
+
+## Developer Installation
+
+- Install Python 3.6 
 
 ``` bash
 # Install dependencies
@@ -15,28 +21,23 @@ pip install -r requirements.txt
 
 Configuration
 ---
-In config.py set:
-- `DATA_PATH` to your preferred output location
+In config.json set:
+- `data_path` to your preferred output location
 - Change COM3, COM4, COM5, COM6, COM7 to their respective port in which they are connected to your computer.
-- If you have data streamed through a UDP port, modify `LAN_PORT`
+- If you have data streamed through a UDP port, modify `udp_port`
 ---
-Create connection.py and fill out the following:
+In you would like to send data to your server fill out the following:
 
-- SERVER = 'https://servername.org/somepath/'
-- SERVER_LOGIN = "https://water.geosci.msstate.edu/monitoradmin/signin"
-- USERNAME = 'someusername'
-- PASSWORD = 'somepassword'
-
+- server: "https://servername.org/somepath/"
+- server_login = "https://water.geosci.msstate.edu/monitoradmin/signin"
+- username: "someusername"
+- password: "somepassword"
+- If you are not sending data to a server make sure to set `send_data` to `false`.
 
 Usage
 ---
-- Run main.py or double click `start_sensors_bridge.bat` file. It will start reading and saving data to the DATA_PATH.
+- Run run.py or double click `start_sensors_bridge.bat` file. It will start reading and saving data to the DATA_PATH.
 - You can run the script as a schedule task using `sensors_bridge_task.xml`.
-
-To Do
----
-
-- Create GUI and Windows installer
 
 ## App Info
 

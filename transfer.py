@@ -57,6 +57,7 @@ def create_log(message, show_message=True):
     now = datetime.now()
     dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
     dt_name_str = now.strftime("%d_%m_%Y")
+
     file_name = 'log_{}.txt'.format(dt_name_str)
     file_path = os.path.join(DATA_PATH, file_name)
     msg = '{} {}\n'.format(dt_string, message)
@@ -85,7 +86,7 @@ def save_to_file(com, data):
     dt_string = now.strftime("%d_%m_%Y")
     file_name = '{}_{}.csv'.format(dt_string, PORT_INFO[com]['name'])
     file_path = os.path.join(DATA_PATH, file_name)
-    add_header = False
+
     if not os.path.isfile(file_path):
         with open(file_path, 'w', newline='') as csvfile:
             wr = csv.writer(csvfile)
@@ -288,36 +289,36 @@ def process_location(data):
 
 def read_com(com):
     show_no_internet_error = False
-    try:
-        a_serial = serial.Serial(
-            com, PORT_INFO[com]['baud_rate'],
-            parity=serial.PARITY_NONE,
-            bytesize=serial.EIGHTBITS,
-            stopbits=serial.STOPBITS_ONE
-        )
-        if com == 'COM7':
-            a_serial.write(b'setbaud=9600\r\n')
-            a_serial.write(b'setbaud=9600\r\n')
-            a_serial.write(b'SetFormat=1\r\n')
-            a_serial.write(b'SetAvg=2\r\n')
-            a_serial.write(b'Start\r\n')
-        while True:
-            utc_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S.%f")
-            c = a_serial.readline()
-            row = re.split(PORT_INFO[com]['separator'], c.decode().strip())
+    # try:
+    a_serial = serial.Serial(
+        com, PORT_INFO[com]['baud_rate'],
+        parity=serial.PARITY_NONE,
+        bytesize=serial.EIGHTBITS,
+        stopbits=serial.STOPBITS_ONE
+    )
+    if com == 'COM7':
+        a_serial.write(b'setbaud=9600\r\n')
+        a_serial.write(b'setbaud=9600\r\n')
+        a_serial.write(b'SetFormat=1\r\n')
+        a_serial.write(b'SetAvg=2\r\n')
+        a_serial.write(b'Start\r\n')
+    while True:
+        utc_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S.%f")
+        c = a_serial.readline()
+        row = re.split(PORT_INFO[com]['separator'], c.decode().strip())
 
-            if len(row) != len(PORT_INFO[com]['header']):
-                continue
-            data = dict(zip(PORT_INFO[com]['header'], row))
+        if len(row) != len(PORT_INFO[com]['header']):
+            continue
+        data = dict(zip(PORT_INFO[com]['header'], row))
 
-            data['datetime'] = utc_time
-            # print (row, data)
-            manage_data(data, com, show_no_internet_error)
-            # print (data)
+        data['datetime'] = utc_time
+        # print (row, data)
+        manage_data(data, com, show_no_internet_error)
+        # print (data)
 
-    except:
-        msg_with_time = create_log(traceback.format_exc())
-        print('Failed data: ', com, data)
+    # except:
+    #     msg_with_time = create_log(traceback.format_exc())
+    #     print('Failed data: ', com, data)
         # print(msg_with_time)
 
 
