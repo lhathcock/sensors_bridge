@@ -731,7 +731,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         row_col =  self.sender().parentWidget().objectName()
         # print ( 2, self.sender().parentWidget().parentWidget().objectName())
         # row_col = self.sender().parentWidget().button(QDialogButtonBox.Save).objectName()
-        print (3, row_col)
+        # print (3, row_col)
         row_col = row_col.split(',')
         row = int(row_col[0])
         col = int(row_col[1])
@@ -747,7 +747,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                 text = cell_item.text().strip()
                 if len(text)> 0:
                     header.append(text)
-        print (row, col)
+        # print (row, col)
         self.sensors_config_tw.item(row, col).setText(','.join(header))
 
         self.sensors_config_tw.viewport().update()
@@ -775,9 +775,13 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                     combo2.addItem(com)
 
                 index = combo2.findText(conf['code'], Qt.MatchFixedString)
-                print (index, conf['code'])
+                # print (index, conf['code'])
+
                 if index >= 0:
                     combo2.setCurrentIndex(index)
+                else:
+                    combo2.addItem(conf['code'])
+                    combo2.setCurrentIndex(0)
                 self.sensors_config_tw.setCellWidget(idx, 2, combo2)
             else:
                 item2 = QTableWidgetItem(conf['code'])
@@ -853,7 +857,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                 # if item is not None:
                 #     print (item.text())
             sensors_config.append(conf)
-
+        # print (sensors_config)
         basic_options['data_path'] = self.data_folder_lne.text()
         basic_options['file_keep_limit'] = self.file_keep_limit_sb.value()
         basic_options['udp_port'] = self.udp_port_sb.value()
