@@ -1,5 +1,3 @@
-# from fbs_runtime.application_context.PyQt5 import ApplicationContext, cached_property
-
 import json
 import csv
 import re
