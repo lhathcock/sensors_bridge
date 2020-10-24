@@ -3,6 +3,8 @@
 > Receives data from water quality sensors - Ecotriplets 1, 2, and 3, dissolved oxygen, and co2procv.
 > It saves data to a folder and sends it to a server.
 
+![Options](images/options.png)
+![Options](images/sensors_configuration.png)
 ## User Installation
 
 - The installer and the portable executable are located in `dist` folder of the repository.
@@ -29,10 +31,10 @@ In config.json set:
 ---
 In you would like to send data to your server fill out the following:
 
-- server: "https://servername.org/somepath/"
-- server_login = "https://water.geosci.msstate.edu/monitoradmin/signin"
-- username: "someusername"
-- password: "somepassword"
+- "server": "https://servername.org/somepath/"
+- "server_login": "https://water.geosci.msstate.edu/monitoradmin/signin"
+- "username": "someusername"
+- "password": "somepassword"
 - If you are not sending data to a server make sure to set `send_data` to `false`.
 
 Usage
