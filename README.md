@@ -2,11 +2,12 @@
 
 > Receives data from water quality sensors - Ecotriplets 1, 2, and 3, dissolved oxygen, and co2procv.
 > It saves data to a folder and sends it to a server.
->
->
+
 ## User Installation
 
-- Run SensorsBridge.exe located in `dist` folder of the repository.  
+- The installer and the portable executable are located in `dist` folder of the repository.
+- Install SensorsBridge using the installer SensorsBridgeInstaller_v1.0.0.exe
+- You can run SensorsBridgePortable_v1.0.0.exe without installation   
 
 
 ## Developer Installation
@@ -42,13 +43,14 @@ Usage
 ## App Info
 
 ### Authors
-- Jane Moorhead
 - Wondimagegn Tesfaye Beshah
+- Jane Moorhead
+- Dr. Padmanava Dash
 
 ### Version
-
 1.0.0
 
 ### License
-
+ GNU General Public License Version 3
+ 
 Copyright@ Mississippi State University
