@@ -177,18 +177,20 @@ class Ui_SensorsBridge(object):
         self.help.setObjectName("help")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.help)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
-        self.textEdit = QtWidgets.QTextEdit(self.help)
-        self.textEdit.setObjectName("textEdit")
-        self.verticalLayout_5.addWidget(self.textEdit)
+        self.help_box = QtWidgets.QTextEdit(self.help)
+        self.help_box.setReadOnly(True)
+        self.help_box.setObjectName("help_box")
+        self.verticalLayout_5.addWidget(self.help_box)
         self.toolBox.addItem(self.help, "")
         self.about = QtWidgets.QWidget()
         self.about.setGeometry(QtCore.QRect(0, 0, 939, 421))
         self.about.setObjectName("about")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.about)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.textEdit_2 = QtWidgets.QTextEdit(self.about)
-        self.textEdit_2.setObjectName("textEdit_2")
-        self.verticalLayout_6.addWidget(self.textEdit_2)
+        self.about_2 = QtWidgets.QTextEdit(self.about)
+        self.about_2.setReadOnly(True)
+        self.about_2.setObjectName("about_2")
+        self.verticalLayout_6.addWidget(self.about_2)
         self.toolBox.addItem(self.about, "")
         self.verticalLayout.addWidget(self.toolBox)
         self.buttonBox = QtWidgets.QDialogButtonBox(SensorsBridge)
@@ -239,7 +241,7 @@ class Ui_SensorsBridge(object):
         item.setText(_translate("SensorsBridge", "Exclude"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.sensors_config_tbx), _translate("SensorsBridge", "Sensors Configuration"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.log_tbx), _translate("SensorsBridge", "Log"))
-        self.textEdit.setHtml(_translate("SensorsBridge", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.help_box.setHtml(_translate("SensorsBridge", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
@@ -278,7 +280,7 @@ class Ui_SensorsBridge(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Contact us at </span><a href=\"mailto:wtb175@msstate.edu\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">wtb175@msstate.edu</span></a><span style=\" font-size:8pt;\"> for support. </span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Create an issue on our </span><a href=\"https://github.com/wondie/sensors_bridge\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">GitHub Repository</span></a><span style=\" font-size:8pt;\">.</span></p></body></html>"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.help), _translate("SensorsBridge", "Help"))
-        self.textEdit_2.setHtml(_translate("SensorsBridge", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.about_2.setHtml(_translate("SensorsBridge", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"

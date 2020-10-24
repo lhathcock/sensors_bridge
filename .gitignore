@@ -3,5 +3,4 @@ venv
 env
 .idea
 __pycache__
-connection.py
 dist/SensorsBridge/

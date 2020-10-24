@@ -1,13 +1,22 @@
 # Water Monitor Sensors Bridge
 
-> Receives data from water quality sensors - Ecotriplets 1, 2, and 3, dissolved oxygen, and co2procv.
-> It saves data to a folder and sends it to a server.
+Sensors Bridge receives data from water quality sensors. It currently support Ecotriplets 1, 2, 
+and 3, dissolved oxygen, and co2procv and any sensor sent via UDP such as GPS and water quality 
+sensors. It saves data to a folder and sends it to a server. Sensors Bridge is developed under 
+the U.S. Army Engineer Research and Development Center (ERDC) funded project coordinated by 
+Mississippi State University Geosystems Research Institute. It is initially designed to read 
+water quality sensor and ancillary data from MSU SeaTrac Autonomous Boat and send it to a 
+receiving server and the [Water Monitor](https://water.geosci.msstate.edu/monitor/) web application. It is customizable to use for other 
+sensors but this feature is not yet added. 
+
+It is a free software under GNU General Public License 3.
 
 ![Options](images/options.png)
-![Options](images/sensors_configuration.png)
+![Sensors Configuration](images/sensors_configuration.png)
+
 ## User Installation
 
-- The installer and the portable executable are located in `dist` folder of the repository.
+- A Windows installer and a portable executable are located in `dist` folder of the repository.
 - Install SensorsBridge using the installer SensorsBridgeInstaller_v1.0.0.exe
 - You can run SensorsBridgePortable_v1.0.0.exe without installation   
 
@@ -39,8 +48,8 @@ In you would like to send data to your server fill out the following:
 
 Usage
 ---
-- Run run.py or double click `start_sensors_bridge.bat` file. It will start reading and saving data to the DATA_PATH.
-- You can run the script as a schedule task using `sensors_bridge_task.xml`.
+- Run run.py or double click `start_sensors_bridge.bat` file. It will start reading and saving data to the `data_path`.
+- You can run the `main.py` script as a schedule task using `sensors_bridge_task.xml`.
 
 ## App Info
 
@@ -53,6 +62,7 @@ Usage
 1.0.0
 
 ### License
- GNU General Public License Version 3
+[GNU General Public License Version 3](https://github.com/wondie/sensors_bridge/blob/master/LICENSE)
  
-Copyright@ Mississippi State University
+Copyright@ [Mississippi State University](https://www.msstate.edu/)
+ 
