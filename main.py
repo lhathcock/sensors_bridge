@@ -3,12 +3,12 @@ import csv
 import re
 import threading
 import time
-import os
+
+from os import remove, path, SEEK_END, unlink
 import serial
 import socket
 import glob
 import traceback
-import urllib3
 import serial.tools.list_ports
 from datetime import datetime, timezone
 from urllib.parse import urlencode
@@ -29,10 +29,8 @@ from PyQt5.QtWidgets import (
 
 from ui.sensorsbridge import Ui_SensorsBridge
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 SESSION = None
-ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
+ROOT_PATH = path.dirname(path.realpath(__file__))
 DEFAULT_CONFIG = {
     "ecotriplet2": {
         "separator": "\t+",
@@ -119,7 +117,7 @@ class Bridge():
         dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
         dt_name_str = now.strftime("%d_%m_%Y")
         file_name = 'log_{}.txt'.format(dt_name_str)
-        file_path = os.path.join(self.basic_options['data_path'], file_name)
+        file_path = path.join(self.basic_options['data_path'], file_name)
         if sensor_name != '':
             msg = '{}$ {} {}\n'.format(sensor_name, dt_string, message)
         else:
@@ -135,9 +133,9 @@ class Bridge():
         now = datetime.now()
         dt_string = now.strftime("%d_%m_%Y")
         file_name = '{}_{}.csv'.format(dt_string, sensor['name'])
-        file_path = os.path.join(self.basic_options['data_path'], file_name)
+        file_path = path.join(self.basic_options['data_path'], file_name)
         try:
-            if not os.path.isfile(file_path):
+            if not path.isfile(file_path):
                 with open(file_path, 'w', newline='') as csvfile:
                     wr = csv.writer(csvfile, delimiter=',', lineterminator='\n')
                     wr.writerow(data.keys())
@@ -153,9 +151,9 @@ class Bridge():
         now = datetime.now()
         dt_string = now.strftime("%d_%m_%Y_temp")
         file_name = '{}_{}.csv'.format(dt_string, sensor['name'])
-        file_path = os.path.join(self.basic_options['data_path'], file_name)
+        file_path = path.join(self.basic_options['data_path'], file_name)
 
-        if not os.path.isfile(file_path):
+        if not path.isfile(file_path):
             with open(file_path, 'w', newline='') as csvfile:
                 wr = csv.writer(csvfile, delimiter=',', lineterminator='\n')
                 wr.writerow(data.keys())
@@ -205,7 +203,7 @@ class Bridge():
         header.append('datetime')
         # print (temp_files)
         for temp_file in temp_files:  # get com port from temp file
-            if not os.path.exists(temp_file):
+            if not path.exists(temp_file):
                 continue
             msg = 'Sending backup {}'.format(temp_file)
             msg_with_time = self.create_log(msg, sensor['name'])
@@ -228,7 +226,7 @@ class Bridge():
             # print (results)
             if False not in results:
                 try:
-                    os.remove(temp_file)  # delete file after all data is sent
+                    remove(temp_file)  # delete file after all data is sent
                 except:  # error may happen when deleting file being read so pass it
                     pass
         header.remove('datetime')
@@ -240,7 +238,7 @@ class Bridge():
         temp_files = glob.glob(self.basic_options['data_path'] + '/*temp*')
         # print (temp_files)
         for temp_file in temp_files:  # get com port from temp file
-            if not os.path.exists(temp_file):
+            if not path.exists(temp_file):
                 continue
             sensors = [l for l in self.sensors_config
                        if self.sensors_config['name'] in temp_file]
@@ -264,7 +262,7 @@ class Bridge():
             msg_with_time = self.create_log(msg2, sensor['name'])
             print(msg_with_time)
             try:
-                os.remove(temp_file)  # delete file after all data is sent
+                remove(temp_file)  # delete file after all data is sent
             except:  # error may happen when deleting file being read so pass it
                 pass
             header.remove('datetime')
@@ -274,7 +272,7 @@ class Bridge():
         txt_data = glob.glob('{}\\*'.format(self.basic_options['data_path']))
         for f in txt_data:
             name = None
-            file_name = os.path.basename(f)
+            file_name = path.basename(f)
             if 'log' not in file_name:
                 try:
                     name = file_name.split('_')[-1].split('.')[0]
@@ -284,9 +282,9 @@ class Bridge():
                 name = ''
             if name is None:
                 continue # not sensors bridge file
-            creation_time = os.path.getctime(f)
+            creation_time = path.getctime(f)
             if (current_time - creation_time) // (24 * 3600) >= self.basic_options['file_keep_limit']:
-                os.unlink(f)
+                unlink(f)
                 msg = '{} removed'.format(f)
                 msg_with_time = self.create_log(msg, name)
                 print(msg_with_time)
@@ -461,10 +459,14 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         # self.populate_gui()
 
     def load_config(self):
+        """
+        Loads the configuration file.
+        :return:
+        """
         self.config_folder = self.config_folder_le.text()
-        if os.path.isdir(self.config_folder):
-            config_path = os.path.join(self.config_folder, 'config.json')
-            if os.path.isfile(config_path):
+        if path.isdir(self.config_folder):
+            config_path = path.join(self.config_folder, 'config.json')
+            if path.isfile(config_path):
                 self.config_path = config_path.replace('\\', '/')
                 with open(self.config_path) as f:
                     self.config = json.load(f)
@@ -474,6 +476,10 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                     s.write(self.config_path)
 
     def init_gui(self):
+        """
+        Initializes the widgets with signals
+        :return:
+        """
         self.log_boxes = {}
 
         self.load_default_config()
@@ -488,7 +494,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         pw = self.password_le
         pw.setEchoMode(QLineEdit.Password)
         pw.show()
-        self.server_gb.toggled.connect(self.connect_to_server)
+        self.server_gb.toggled.connect(self.set_connect_to_server)
         self.buttonBox.button(QDialogButtonBox.Ok).setText("Run")
         self.buttonBox.button(QDialogButtonBox.Discard).setText("Stop")
         self.buttonBox.button(QDialogButtonBox.Cancel).setText("Exit")
@@ -503,16 +509,20 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         self.log.connect(self.insert_log_text)
 
     def load_default_config(self):
-        if os.path.isfile('.settings'):
+        """
+        Load the default configuration if there is no configuration already set.
+        :return:
+        """
+        if path.isfile('.settings'):
             with open('.settings', 'r') as s:
 
                 self.config_path = s.readline().strip()
-                self.config_folder = os.path.dirname(self.config_path)
+                self.config_folder = path.dirname(self.config_path)
         else:
-            self.config_path = os.path.join(ROOT_PATH, 'config.json')
+            self.config_path = path.join(ROOT_PATH, 'config.json')
             self.config_folder = ROOT_PATH
 
-        if os.path.isfile(self.config_path):
+        if path.isfile(self.config_path):
 
             self.config_folder_le.setText(self.config_folder.replace('\\', '/'))
 
@@ -523,9 +533,14 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             self.config_path = None
 
     def populate_gui(self):
+        """
+        Populate the GUI fields using the configuration.
+        :return:
+        """
         if 'basic_options' in self.config.keys():
             self.basic_options = self.config['basic_options']
-            self.data_folder_lne.setText(self.basic_options['data_path'])
+            if path.isdir(self.basic_options['data_path']):
+                self.data_folder_lne.setText(self.basic_options['data_path'])
 
             self.file_keep_limit_sb.setValue(self.basic_options['file_keep_limit'])
 
@@ -548,19 +563,35 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
 
     @staticmethod
     def resource_path(relative_path):
-        """ Get absolute path to resource, works for dev and for PyInstaller """
+        """
+         Get absolute path to resource, works for dev and for PyInstaller
+        :param relative_path:
+        :return:
+        """
         try:
             # PyInstaller creates a temp folder and stores path in _MEIPASS
             base_path = sys._MEIPASS
         except Exception:
-            base_path = os.path.abspath(".")
+            base_path = path.abspath(".")
 
-        return os.path.join(base_path, relative_path)
+        return path.join(base_path, relative_path)
 
-    def connect_to_server(self, status):
+    def set_connect_to_server(self, status):
+        """
+        Sets connection to the server setting using the server config groupbox checkbox.
+        :param status:
+        :return:
+        """
         self.server_options["send_data"] = status
 
     def show_message(self, title, msg):
+        """
+        Show messages as a popup.
+        :param title: The type of the message. "Error", "Information"
+        :type title: String
+        :param msg: The message to be displayed.
+        :return:
+        """
         msgBox = QMessageBox()
         if title == 'Error':
             icon = QMessageBox.Critical
@@ -648,16 +679,16 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         table.removeRow(table.currentRow())
 
     def save_config(self, silent=False):
-        # print ( os.path.isdir(self.config_path))
+        # print ( path.isdir(self.config_path))
 
-        if not os.path.isdir(self.config_folder):
+        if not path.isdir(self.config_folder):
             if not silent:
                 self.show_message('Error', 'Configuration folder is not selected in Basic Options')
                 return
             else:
                 self.config_folder = ROOT_PATH
         config = self.read_config()
-        self.config_path = os.path.join(self.config_folder, 'config.json').replace('\\', '/')
+        self.config_path = path.join(self.config_folder, 'config.json').replace('\\', '/')
 
         self.config = config
 
@@ -896,12 +927,12 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
 
         thefile = open(file_path, 'r')
         name = None
-        file_name = os.path.basename(file_path)
+        file_name = path.basename(file_path)
         if 'log' not in file_name:
 
             name = file_name.split('_')[-1].split('.')[0]
 
-        thefile.seek(0, os.SEEK_END)  # End-of-file
+        thefile.seek(0, SEEK_END)  # End-of-file
         while True:
             line = thefile.readlines()
 
@@ -925,9 +956,9 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         now = datetime.now()
         dt_name_str = now.strftime("%d_%m_%Y")
         file_name = 'log_{}.txt'.format(dt_name_str)
-        log_file = os.path.join(self.basic_options['data_path'], file_name)
+        log_file = path.join(self.basic_options['data_path'], file_name)
 
-        if not os.path.isfile(log_file):
+        if not path.isfile(log_file):
             return
 
         t = threading.Thread(name='background', target=self.read_log_file, args=(log_file,))
@@ -937,9 +968,9 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         now = datetime.now()
         dt_string = now.strftime("%d_%m_%Y")
         file_name = '{}_{}.csv'.format(dt_string, sensor['name'])
-        file_path = os.path.join(self.basic_options['data_path'], file_name)
+        file_path = path.join(self.basic_options['data_path'], file_name)
 
-        if not os.path.isfile(file_path):
+        if not path.isfile(file_path):
             f = open(file_path, 'w')
             f.close()
 
@@ -999,20 +1030,8 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             else:
                 log_box.appendPlainText(names[1].strip())
 
-        # else: #
-        #     # log_box = self.log_boxes['aml']
-        #     log_box.appendPlainText(str)
-
-    #
     def accept(self):
         pass
-    #     for sensor in self.sensors_config:
-    #         if self.data_log_ck.isChecked():
-    #             self.run_reading_data_file(sensor)
-    #
-    #     self.buttonBox.button(QDialogButtonBox.Ok).setDisabled(True)
-    #     if self.sys_msg_log_ck.isChecked():
-    #         self.run_reading_log_file()
 
 
 if __name__ == "__main__":
@@ -1028,6 +1047,9 @@ if __name__ == "__main__":
 
     def run_process(app):
         config = app.save_config(True)
+        if len(config['basic_options']['data_path'].strip()) < 2:
+            app.show_message('Error', 'Unable to run as no data folder is selected.')
+            return
         if len(config['sensors_config']) == 0:
             app.show_message('Error', 'Unable to run as no sensor configuration is filled out.')
             return
@@ -1101,7 +1123,6 @@ if __name__ == "__main__":
 
         sensor_bridge.show()
         app.exec_()
-
 
     sys.excepthook = except_hook
     main()
