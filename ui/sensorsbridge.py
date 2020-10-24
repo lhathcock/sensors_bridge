@@ -173,6 +173,7 @@ class Ui_SensorsBridge(object):
         self.verticalLayout_4.addWidget(self.log_tab)
         self.toolBox.addItem(self.log_tbx, "")
         self.help = QtWidgets.QWidget()
+        self.help.setGeometry(QtCore.QRect(0, 0, 939, 421))
         self.help.setObjectName("help")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.help)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
@@ -181,6 +182,7 @@ class Ui_SensorsBridge(object):
         self.verticalLayout_5.addWidget(self.textEdit)
         self.toolBox.addItem(self.help, "")
         self.about = QtWidgets.QWidget()
+        self.about.setGeometry(QtCore.QRect(0, 0, 939, 421))
         self.about.setObjectName("about")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.about)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
@@ -272,8 +274,9 @@ class Ui_SensorsBridge(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt; font-weight:600;\">Log</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">This is the tab that shows the system messages and data on realtime bases when you start capturing data. Each sensor has its on Log tab. </span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Support</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Contact us at </span><a href=\"mailto:wtb175@msstate.edu\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">wtb175@msstate.edu</span></a><span style=\" font-size:8pt;\"> for support. </span></p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Support and Bug Report</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Contact us at </span><a href=\"mailto:wtb175@msstate.edu\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">wtb175@msstate.edu</span></a><span style=\" font-size:8pt;\"> for support. </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Create an issue on our </span><a href=\"https://github.com/wondie/sensors_bridge\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">GitHub Repository</span></a><span style=\" font-size:8pt;\">.</span></p></body></html>"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.help), _translate("SensorsBridge", "Help"))
         self.textEdit_2.setHtml(_translate("SensorsBridge", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -286,8 +289,11 @@ class Ui_SensorsBridge(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Sensors Bridge is developed under </span><a href=\"https://www.erdc.usace.army.mil/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">the U.S. Army Engineer Research and Development Center (ERDC)</span></a><span style=\" font-size:8pt;\"> funded project coordinated by </span><a href=\"https://www.gri.msstate.edu/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Mississippi State University Geosystems Research Institute</span></a><span style=\" font-size:8pt;\">. It is initially designed to read water quality sensor and ancillary data from MSU SeaTrac Autonomous Boat and send it to a receiving server and the </span><a href=\"https://water.geosci.msstate.edu/monitor/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Water Monitor</span></a><span style=\" font-size:8pt;\"> web application. It is customizable to use for other sensors but this feature is not yet added. </span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Authors</span><span style=\" font-size:8pt;\">: Wondimagegn Tesfaye Beshah (Mississippi State University - Department of Geosciences), Jane Moorhead  (Mississippi State University - Department Electrical and Computer Engineering), and Dr. Padmanava Dash  (Mississippi State University - Department of Geosciences).  . </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Authors</span><span style=\" font-size:8pt;\">: Wondimagegn Tesfaye Beshah (Mississippi State University - Department of Geosciences), Jane Moorhead  (Mississippi State University - Department Electrical and Computer Engineering), and Dr. Padmanava Dash  (Mississippi State University - Department of Geosciences).  </span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">It is a free software under GNU General Public License 3.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Product Home</span><span style=\" font-size:8pt;\">: </span><a href=\"https://github.com/wondie/sensors_bridge\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">https://github.com/wondie/sensors_bridge</span></a></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Copyright © 2020 </span><a href=\"https://www.msstate.edu/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Mississippi State University</span></a><span style=\" font-size:8pt;\">. All rights reserved.</span></p></body></html>"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.about), _translate("SensorsBridge", "About"))
