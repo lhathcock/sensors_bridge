@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>878</width>
+    <width>906</width>
     <height>557</height>
    </rect>
   </property>
@@ -24,8 +24,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>860</width>
-        <height>421</height>
+        <width>884</width>
+        <height>398</height>
        </rect>
       </property>
       <attribute name="label">
@@ -37,36 +37,36 @@
          <property name="title">
           <string>Basic Options</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>Output data folder</string>
+             <string>UDP Port</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="data_folder_lne"/>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="data_folder_btn">
+          <item row="6" column="1">
+           <widget class="QCheckBox" name="sys_msg_log_ck">
             <property name="text">
-             <string>Browse</string>
+             <string>System messages</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_4">
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>days</string>
+             <string>Remove files older than</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="2">
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Log display</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1" colspan="3">
            <widget class="QSpinBox" name="udp_port_sb">
             <property name="maximum">
              <number>1000000</number>
@@ -76,24 +76,71 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="3" column="3">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>days</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QPushButton" name="data_folder_btn">
+            <property name="text">
+             <string>Browse...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QCheckBox" name="data_log_ck">
+            <property name="text">
+             <string>Data</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Output data folder</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
            <widget class="QSpinBox" name="file_keep_limit_sb">
             <property name="value">
              <number>3</number>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_10">
             <property name="text">
-             <string>Remove files older than</string>
+             <string>Configuration folder</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_3">
+          <item row="0" column="3">
+           <widget class="QPushButton" name="config_folder_btn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>UDP Port</string>
+             <string>Browse...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
+           <widget class="QLineEdit" name="data_folder_lne"/>
+          </item>
+          <item row="0" column="1" colspan="2">
+           <widget class="QLineEdit" name="config_folder_le">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
            </widget>
           </item>
@@ -159,8 +206,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>860</width>
-        <height>421</height>
+        <width>884</width>
+        <height>398</height>
        </rect>
       </property>
       <attribute name="label">
@@ -172,14 +219,14 @@
          <item>
           <widget class="QToolButton" name="add_btn">
            <property name="text">
-            <string>+ Add</string>
+            <string>Add</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="remove_btn">
            <property name="text">
-            <string>- Remove</string>
+            <string>Remove</string>
            </property>
           </widget>
          </item>
@@ -285,8 +332,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>860</width>
-        <height>421</height>
+        <width>157</width>
+        <height>28</height>
        </rect>
       </property>
       <attribute name="label">
@@ -312,7 +359,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Save</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Discard|QDialogButtonBox::Ok|QDialogButtonBox::Save</set>
      </property>
     </widget>
    </item>

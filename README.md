@@ -6,7 +6,7 @@
 >
 ## User Installation
 
-- Copy dist folder in this repository and double click SensorsBridge.exe. Keep all files in dist folder together. 
+- Run SensorsBridge.exe located in `dist` folder of the repository.  
 
 
 ## Developer Installation

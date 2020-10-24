@@ -15,6 +15,8 @@ a = Analysis(['main.py'],
              win_private_assemblies=False,
              cipher=block_cipher,
              noarchive=False)
+a.datas += [('favicon.ico','D:\\MSU\\watermonitor\\sensors_bridge\\favicon.ico', 'Data')]
+
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
