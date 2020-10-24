@@ -1047,8 +1047,11 @@ if __name__ == "__main__":
 
     def run_process(app):
         config = app.save_config(True)
-        if len(config['basic_options']['data_path'].strip()) < 2:
+        if len(config['basic_options']['data_path'].strip())==0:
             app.show_message('Error', 'Unable to run as no data folder is selected.')
+            return
+        if not path.isdir(config['basic_options']['data_path'].strip()):
+            app.show_message('Error', 'Unable to run as the data folder does not exist.')
             return
         if len(config['sensors_config']) == 0:
             app.show_message('Error', 'Unable to run as no sensor configuration is filled out.')

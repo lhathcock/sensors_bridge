@@ -14,13 +14,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SensorsBridge(object):
     def setupUi(self, SensorsBridge):
         SensorsBridge.setObjectName("SensorsBridge")
-        SensorsBridge.resize(906, 557)
+        SensorsBridge.resize(961, 633)
         self.verticalLayout = QtWidgets.QVBoxLayout(SensorsBridge)
         self.verticalLayout.setObjectName("verticalLayout")
         self.toolBox = QtWidgets.QToolBox(SensorsBridge)
         self.toolBox.setObjectName("toolBox")
         self.options_tbx = QtWidgets.QWidget()
-        self.options_tbx.setGeometry(QtCore.QRect(0, 0, 884, 398))
+        self.options_tbx.setGeometry(QtCore.QRect(0, 0, 939, 421))
         self.options_tbx.setObjectName("options_tbx")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.options_tbx)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
@@ -116,7 +116,7 @@ class Ui_SensorsBridge(object):
         self.verticalLayout_3.addWidget(self.server_gb)
         self.toolBox.addItem(self.options_tbx, "")
         self.sensors_config_tbx = QtWidgets.QWidget()
-        self.sensors_config_tbx.setGeometry(QtCore.QRect(0, 0, 884, 398))
+        self.sensors_config_tbx.setGeometry(QtCore.QRect(0, 0, 939, 421))
         self.sensors_config_tbx.setObjectName("sensors_config_tbx")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.sensors_config_tbx)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -164,7 +164,7 @@ class Ui_SensorsBridge(object):
         self.verticalLayout_2.addWidget(self.sensors_config_tw)
         self.toolBox.addItem(self.sensors_config_tbx, "")
         self.log_tbx = QtWidgets.QWidget()
-        self.log_tbx.setGeometry(QtCore.QRect(0, 0, 157, 28))
+        self.log_tbx.setGeometry(QtCore.QRect(0, 0, 939, 421))
         self.log_tbx.setObjectName("log_tbx")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.log_tbx)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
@@ -172,10 +172,23 @@ class Ui_SensorsBridge(object):
         self.log_tab.setObjectName("log_tab")
         self.verticalLayout_4.addWidget(self.log_tab)
         self.toolBox.addItem(self.log_tbx, "")
+        self.help = QtWidgets.QWidget()
+        self.help.setObjectName("help")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.help)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.textEdit = QtWidgets.QTextEdit(self.help)
+        self.textEdit.setObjectName("textEdit")
+        self.verticalLayout_5.addWidget(self.textEdit)
+        self.toolBox.addItem(self.help, "")
+        self.about = QtWidgets.QWidget()
+        self.about.setObjectName("about")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.about)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.textEdit_2 = QtWidgets.QTextEdit(self.about)
+        self.textEdit_2.setObjectName("textEdit_2")
+        self.verticalLayout_6.addWidget(self.textEdit_2)
+        self.toolBox.addItem(self.about, "")
         self.verticalLayout.addWidget(self.toolBox)
-        self.gridLayout = QtWidgets.QGridLayout()
-        self.gridLayout.setObjectName("gridLayout")
-        self.verticalLayout.addLayout(self.gridLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(SensorsBridge)
         self.buttonBox.setEnabled(True)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -224,3 +237,57 @@ class Ui_SensorsBridge(object):
         item.setText(_translate("SensorsBridge", "Exclude"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.sensors_config_tbx), _translate("SensorsBridge", "Sensors Configuration"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.log_tbx), _translate("SensorsBridge", "Log"))
+        self.textEdit.setHtml(_translate("SensorsBridge", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Sensors Bridge Documentation</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Sensors Bridge receives data from water quality sensors. It currently supports Ecotriplets 1, 2, and 3, dissolved oxygen, and co2procv and any sensor sent via UDP such as GPS and water quality sensors. It saves data to a folder and sends it to a server.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt; font-weight:600;\">Options</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">Basic Options</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Configuration Folder</span>: By default Sensors Bridge uses its installation folder to store configuration. However, you can change it to any folder in your computer. The default configuration needs to be modified based on the sensors you have and to which COM ports they are connected.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Output</span> <span style=\" font-weight:600;\">Data Folder</span>: is where the data and log files are stored. The data and logs are organized by data followed by the sensor name (generated from sensor label). The data is raw data that directly come from the sensors. You will need to convert it using your server or other software like Microsoft Excel. The output data is CSV file comma delimited that you can open using Spreadsheet software. </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Remove Files Older Than</span>: <span style=\" font-family:\'MS Shell Dlg 2,sans-serif\'; font-size:8pt;\">determines</span> the maximum days data will be stored. Data and logs older that the specified days will be removed.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">UDP Port</span>: the UDP port number to be connected. </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Log Display</span>: can be shown in the Log tab if checked. You can see system messages and/or data being saved. Note, this will add extra resources on the computer so it is only recommended for debugging purposes.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">Server Options</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If you want to send data to a server, you can check the checkbox to enable it. If you don\'t have a server, make sure to uncheck it. The receiving server must accept Post data. </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Server</span>: the URL of the server</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Server Login</span>: the login URL of the server.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Username</span>: the username to have access to the server if any.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Password</span>: the password of the user if any</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Sensors Configuration</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">The Sensors Configuration is where you add sensors details. The default configuration comes will all the sensors. You can modify the header fields and the exclude fields. You can add or remove based on the sensors you have and want to capture data from.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Label</span><span style=\" font-size:8pt;\">: The name of the sensor. The sensor name is auto generated by removing the label. The sensor name is used to send data to the server. So, make sure to type it the same way as the server expects the same name. </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Type</span><span style=\" font-size:8pt;\">: The communication interface type</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Code</span><span style=\" font-size:8pt;\">: The code of data. The code for COM ports is determined by the port number your computer gives to currently connected ports. Make sure the sensor and the COM port number you choose match. This default configuration will need to be changed here. For UDP,  the code should be the first word before a dollar sign. The UDP expects the following format CODE$[data comma separated]*checksum.  </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Header</span><span style=\" font-size:8pt;\">: This is the field name for comma or tab separated data that comes from the sensors. All fields must be included here. </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Exclude</span><span style=\" font-size:8pt;\">: If you don\'t want to save some columns, you can exclude them here. </span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt; font-weight:600;\">Log</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">This is the tab that shows the system messages and data on realtime bases when you start capturing data. Each sensor has its on Log tab. </span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Support</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Contact us at </span><a href=\"mailto:wtb175@msstate.edu\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">wtb175@msstate.edu</span></a><span style=\" font-size:8pt;\"> for support. </span></p></body></html>"))
+        self.toolBox.setItemText(self.toolBox.indexOf(self.help), _translate("SensorsBridge", "Help"))
+        self.textEdit_2.setHtml(_translate("SensorsBridge", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Sensors Bridge</span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">Version 1.0.0</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Sensors Bridge receives data from water quality sensors. It currently support Ecotriplets 1, 2, and 3, dissolved oxygen, and co2procv and any sensor sent via UDP such as GPS and water quality sensors. It saves data to a folder and sends it to a server.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Sensors Bridge is developed under </span><a href=\"https://www.erdc.usace.army.mil/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">the U.S. Army Engineer Research and Development Center (ERDC)</span></a><span style=\" font-size:8pt;\"> funded project coordinated by </span><a href=\"https://www.gri.msstate.edu/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Mississippi State University Geosystems Research Institute</span></a><span style=\" font-size:8pt;\">. It is initially designed to read water quality sensor and ancillary data from MSU SeaTrac Autonomous Boat and send it to a receiving server and the </span><a href=\"https://water.geosci.msstate.edu/monitor/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Water Monitor</span></a><span style=\" font-size:8pt;\"> web application. It is customizable to use for other sensors but this feature is not yet added. </span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Authors</span><span style=\" font-size:8pt;\">: Wondimagegn Tesfaye Beshah (Mississippi State University - Department of Geosciences), Jane Moorhead  (Mississippi State University - Department Electrical and Computer Engineering), and Dr. Padmanava Dash  (Mississippi State University - Department of Geosciences).  . </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">It is a free software under GNU General Public License 3.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Copyright © 2020 </span><a href=\"https://www.msstate.edu/\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Mississippi State University</span></a><span style=\" font-size:8pt;\">. All rights reserved.</span></p></body></html>"))
+        self.toolBox.setItemText(self.toolBox.indexOf(self.about), _translate("SensorsBridge", "About"))

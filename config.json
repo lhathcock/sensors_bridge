@@ -1,8 +1,8 @@
 {
   "basic_options": {
-    "data_path": "C:/Users/wondim/Desktop/close",
+    "data_path": "",
     "file_keep_limit": 3,
-    "udp_port": 50000
+    "udp_port": 5000
   },
   "server_options": {
     "server": "https://water.geosci.msstate.edu/monitor/",
