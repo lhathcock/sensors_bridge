@@ -3,7 +3,6 @@ import csv
 import re
 import threading
 import time
-
 from os import remove, path, SEEK_END, unlink
 import serial
 import socket
@@ -431,9 +430,12 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
     log = pyqtSignal(str)
     configFolder = pyqtSignal(str)
 
-    def __init__(self, parent=None):
-
-        QDialog.__init__(self, parent)
+    def __init__(self):
+        """
+        The user interface dialog that loads settings and
+        gives the users options to configure and run the data capture.
+        """
+        QDialog.__init__(self, None)
         self.setupUi(self)
         self._data_folder = None
         self.data_folder_btn.clicked.connect(
@@ -456,7 +458,6 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         self.header_indexes = {'3': 'header', '4': 'exclude'}
         self.config_path = ''
         self.init_gui()
-        # self.populate_gui()
 
     def load_config(self):
         """
@@ -501,12 +502,12 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
 
         self.sensors_config_tw.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
         self.sensors_config_tw.horizontalHeader().setVisible(True)
-        self.sensors_config_tw.cellChanged.connect(self.sensor_table_changed)
+        self.sensors_config_tw.cellChanged.connect(self.sensor_label_changed)
 
         self.add_btn.clicked.connect(self.add_sensor)
         self.remove_btn.clicked.connect(self.remove_sensor)
         self.buttonBox.button(QDialogButtonBox.Save).clicked.connect(self.save_config)
-        self.log.connect(self.insert_log_text)
+        self.log.connect(self.insert_text_to_log_box)
 
     def load_default_config(self):
         """
@@ -608,7 +609,13 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         msgBox.exec_()
 
     def interface_changed(self, value):
-
+        """
+        A slot emitted when the user changes the combobox of Type
+        (communication interfaces type)
+        :param value: The combobox value newly selected
+        :type value: String
+        :return:
+        """
         if 'COM' in value:
             combo2 = QComboBox()
             for com in self.com_ports:
@@ -625,6 +632,11 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                 self.sensors_config_tw.currentRow(), 2, item2)
 
     def add_sensor(self):
+        """
+        Adds sensor rows when the user clicks on the add button in the
+        sensors configuration. The new row is added next to a selected row.
+        :return:
+        """
         idx = self.sensors_config_tw.currentRow() + 1
         self.sensors_config_tw.insertRow(idx)
 
@@ -657,11 +669,18 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         self.sensors_config_tw.setCellWidget(idx, 4, btn_widget2)
 
     def remove_sensor(self):
-        print('Removed')
+        """
+        Removes a selected sensors row when the user clicks on a remove button.
+        :return:
+        """
         self.sensors_config_tw.removeRow(
             self.sensors_config_tw.currentRow())
 
     def add_header(self):
+        """
+        Adds a header or exclude field of a sensor in the header or exclude popup.
+        :return:
+        """
         dialog = self.sender().parentWidget()
         table = [c for c in dialog.children() if isinstance(c, QTableWidget)]
         if len(table) < 1:
@@ -671,6 +690,10 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         table.insertRow(table.currentRow() + 1)
 
     def remove_header(self):
+        """
+        Removes a header or exclude field of a sensor in the header or exclude popup.
+        :return:
+        """
         dialog = self.sender().parentWidget()
         table = [c for c in dialog.children() if isinstance(c, QTableWidget)]
         if len(table) < 1:
@@ -679,11 +702,16 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         table.removeRow(table.currentRow())
 
     def save_config(self, silent=False):
-        # print ( path.isdir(self.config_path))
-
+        """
+        Saves the configuration from the user-interface fields.
+        :param silent: Hide or show error
+        :type Boolean: Boolean
+        :return:
+        """
         if not path.isdir(self.config_folder):
             if not silent:
-                self.show_message('Error', 'Configuration folder is not selected in Basic Options')
+                self.show_message('Error',
+                                  'Configuration folder is not selected in Basic Options')
                 return
             else:
                 self.config_folder = ROOT_PATH
@@ -733,6 +761,10 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             self.sensors_config_tw.blockSignals(False)
 
     def show_list(self):
+        """
+        Shows a dialog with list of headers or excludes from the respective cells.
+        :return:
+        """
         dialog = QDialog(self)
         buttonBox = QDialogButtonBox(dialog)
         buttonBox.setEnabled(True)
@@ -760,7 +792,8 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             label = conf['label']
         else:
             label = 'New'
-        header = self.sensors_config_tw.item(int(row_index), int(col_index)).text().split(',')
+        header = self.sensors_config_tw.item(
+            int(row_index), int(col_index)).text().split(',')
         dialog.setWindowTitle('{} {}'.format(
             label, self.header_indexes[col_index]))
         dialog.resize(278, 457)
@@ -800,14 +833,14 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         buttonBox.button(QDialogButtonBox.Cancel).clicked.connect(dialog.close)
         dialog.show()
 
-    # def save_and_close_header(self):
-    #     self.save_header()
-    #     dialog = self.sender().parentWidget().parentWidget()
     def validate_com(self):
         pass
 
     def save_header(self):
-
+        """
+        After user make changes, save the header or exclude column based of user selection.
+        :return:
+        """
         row_col = self.sender().parentWidget().objectName()
 
         row_col = row_col.split(',')
@@ -833,7 +866,16 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         if self.sender().text() == 'OK':
             dialog.close()
 
-    def sensor_table_changed(self, row, col):
+    def sensor_label_changed(self, row, col):
+        """
+        A slot emitted when a user changes the sensor label. The slot sets object names to
+        the edit buttons of header and exclude fields.
+        :param row: The edited cell row index
+        :type row: Integer
+        :param col: The edited column index
+        :type col: Integer
+        :return:
+        """
         if col == 0:
             name = self.sensors_config_tw.item(row, col).text().replace(' ', '')
             widget_3 = self.sensors_config_tw.cellWidget(row, 3)
@@ -852,7 +894,11 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             exclude_btn.setObjectName('{}:{},{}'.format(4, row, name))
 
     def load_sensor_config(self):
-
+        """
+        Load sensor configuration by reading from the configuration
+        file's sensors_config property.
+        :return:
+        """
         for idx, (conf) in enumerate(self.sensors_config):
 
             self.sensors_config_tw.insertRow(idx)
@@ -874,7 +920,6 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                     combo2.addItem(com)
 
                 index = combo2.findText(conf['code'], Qt.MatchFixedString)
-                # print (index, conf['code'])
 
                 if index >= 0:
                     combo2.setCurrentIndex(index)
@@ -902,20 +947,27 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             self.sensors_config_tw.setCellWidget(idx, 4, btn_widget2)
 
     def create_table_edit_button(self):
-
-        pWidget = QWidget()
+        """
+        Adds an edit button that can be added to a cell.
+        :return:
+        """
+        widget = QWidget()
 
         btn_edit = QToolButton()
         btn_edit.setText("Edit")
 
-        pLayout = QHBoxLayout(pWidget)
-        pLayout.addWidget(btn_edit)
-        pLayout.setAlignment(Qt.AlignRight)
-        pLayout.setContentsMargins(0, 0, 0, 0)
-        pWidget.setLayout(pLayout)
-        return pWidget, btn_edit
+        h_layout = QHBoxLayout(widget)
+        h_layout.addWidget(btn_edit)
+        h_layout.setAlignment(Qt.AlignRight)
+        h_layout.setContentsMargins(0, 0, 0, 0)
+        widget.setLayout(h_layout)
+        return widget, btn_edit
 
     def create_log_tab(self):
+        """
+        Creates an empty log tab for all the sensors.
+        :return:
+        """
         for sensor in self.sensors_config:
             log_box = QPlainTextEdit(self.parent())
 
@@ -923,18 +975,23 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             self.log_boxes[sensor['name']] = log_box
             self.log_tab.addTab(log_box, sensor['label'])
 
-    def read_log_file(self, file_path):
-
-        thefile = open(file_path, 'r')
+    def read_a_file(self, file_path):
+        """
+        Reads a log or data file from a file path.
+        :param file_path: The file path
+        :type file_path: String
+        :return:
+        """
+        the_file = open(file_path, 'r')
         name = None
         file_name = path.basename(file_path)
         if 'log' not in file_name:
 
             name = file_name.split('_')[-1].split('.')[0]
 
-        thefile.seek(0, SEEK_END)  # End-of-file
+        the_file.seek(0, SEEK_END)  # End-of-file
         while True:
-            line = thefile.readlines()
+            line = the_file.readlines()
 
             if not line:
                 time.sleep(0.1)  # Sleep briefly
@@ -952,7 +1009,13 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                         # print(r)
                         self.log.emit(r)
 
+        the_file.close()
+
     def run_reading_log_file(self):
+        """
+        Executes the thread to read a log file.
+        :return:
+        """
         now = datetime.now()
         dt_name_str = now.strftime("%d_%m_%Y")
         file_name = 'log_{}.txt'.format(dt_name_str)
@@ -961,10 +1024,17 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         if not path.isfile(log_file):
             return
 
-        t = threading.Thread(name='background', target=self.read_log_file, args=(log_file,))
+        t = threading.Thread(
+            name='background', target=self.read_a_file, args=(log_file,))
         t.start()
 
     def run_reading_data_file(self, sensor):
+        """
+        Executes the thread to read data file.
+        :param sensor: The name of the sensor for which the data is going to be read.
+        :type sensor: Dictionary
+        :return:
+        """
         now = datetime.now()
         dt_string = now.strftime("%d_%m_%Y")
         file_name = '{}_{}.csv'.format(dt_string, sensor['name'])
@@ -974,10 +1044,14 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             f = open(file_path, 'w')
             f.close()
 
-        t = threading.Thread(name='background', target=self.read_log_file, args=(file_path,))
+        t = threading.Thread(name='background', target=self.read_a_file, args=(file_path,))
         t.start()
 
     def read_config(self):
+        """
+        Read the configuration from the user interface.
+        :return:
+        """
         config = {}
         sensors_config = []
         basic_options = {}
@@ -1018,8 +1092,13 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
 
         return config
 
-    def insert_log_text(self, str):
-
+    def insert_text_to_log_box(self, str):
+        """
+        Inserts data or log to the respective sensor tab in the log tab.
+        :param str: The text to be inserted.
+        :type str: String
+        :return:
+        """
         if '$' in str:
             names = str.split('$')
             log_box = self.log_boxes[names[0]]
@@ -1031,21 +1110,39 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                 log_box.appendPlainText(names[1].strip())
 
     def accept(self):
+        """
+        A slot raised when the user presses the Run button.
+        This empty function prevents the closing of the
+        dialog after pressing the Run button.
+        :return:
+        """
         pass
 
 
 if __name__ == "__main__":
     import sys
-
+    # Prevent the multiprocessing window from executiving this several times.
     multiprocessing.freeze_support()
     processes = []
 
 
     def except_hook(cls, exception, traceback):
+        """
+        Fixes the issue of exception not showing in PyQt.
+        """
         sys.__excepthook__(cls, exception, traceback)
 
 
     def run_process(app):
+        """
+        Runs the data capture and sending after reading and saving the configuration.
+        It uses multiprocessing library to run data capture of all sensors simultaneously.
+        There will be only one process for the UDP to capture data. Each COM ports will have
+        their own process.
+        :param app: SensorsBridge class
+        :type app: Class
+        :return:
+        """
         config = app.save_config(True)
         if len(config['basic_options']['data_path'].strip())==0:
             app.show_message('Error', 'Unable to run as no data folder is selected.')
@@ -1099,6 +1196,12 @@ if __name__ == "__main__":
 
 
     def terminate_processes(app):
+        """
+        Stops the multiple process being run.
+        :param app: SensorsBridge class
+        :type app: Class
+        :return:
+        """
         global STOP
         STOP = True
         app.buttonBox.button(QDialogButtonBox.Ok).setText("Run")
@@ -1113,6 +1216,11 @@ if __name__ == "__main__":
 
 
     def main():
+        """
+        The main method that opens the application dialog and
+        connects run and terminate process signals.
+        :return:
+        """
         app = QApplication([])
         sensor_bridge = SensorsBridge()
         sensor_bridge.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(

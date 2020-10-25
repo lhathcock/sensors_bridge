@@ -177,8 +177,9 @@ class Ui_SensorsBridge(object):
         self.help.setObjectName("help")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.help)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
-        self.help_box = QtWidgets.QTextEdit(self.help)
+        self.help_box = QtWidgets.QTextBrowser(self.help)
         self.help_box.setReadOnly(True)
+        self.help_box.setOpenExternalLinks(True)
         self.help_box.setObjectName("help_box")
         self.verticalLayout_5.addWidget(self.help_box)
         self.toolBox.addItem(self.help, "")
@@ -187,8 +188,9 @@ class Ui_SensorsBridge(object):
         self.about.setObjectName("about")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.about)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.about_2 = QtWidgets.QTextEdit(self.about)
+        self.about_2 = QtWidgets.QTextBrowser(self.about)
         self.about_2.setReadOnly(True)
+        self.about_2.setOpenExternalLinks(True)
         self.about_2.setObjectName("about_2")
         self.verticalLayout_6.addWidget(self.about_2)
         self.toolBox.addItem(self.about, "")
@@ -293,7 +295,7 @@ class Ui_SensorsBridge(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Authors</span><span style=\" font-size:8pt;\">: Wondimagegn Tesfaye Beshah (Mississippi State University - Department of Geosciences), Jane Moorhead  (Mississippi State University - Department Electrical and Computer Engineering), and Dr. Padmanava Dash  (Mississippi State University - Department of Geosciences).  </span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">It is a free software under GNU General Public License 3.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">It is a free software under G</span><a href=\"https://github.com/wondie/sensors_bridge/blob/master/LICENSE\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">NU General Public License 3</span></a><span style=\" font-size:8pt;\">.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Product Home</span><span style=\" font-size:8pt;\">: </span><a href=\"https://github.com/wondie/sensors_bridge\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">https://github.com/wondie/sensors_bridge</span></a></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
