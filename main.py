@@ -70,6 +70,7 @@ class Bridge():
         self.basic_options = config['basic_options']
         self.server_options = config['server_options']
         self.udp_sensors = {s['code']: s for s in self.sensors_config if s['type'] == 'UDP'}
+        self.file_extensions = ('.csv', '.txt')
 
     def connect_to_server(self, sensor, show_no_internet_error=True):
         """
@@ -237,15 +238,16 @@ class Bridge():
         temp_files = glob.glob(self.basic_options['data_path'] + '/*temp*')
         # print (temp_files)
         for temp_file in temp_files:  # get com port from temp file
+
             if not path.exists(temp_file):
                 continue
             sensors = [l for l in self.sensors_config
-                       if self.sensors_config['name'] in temp_file]
+                       if l['name'] in temp_file]
 
             if len(sensors) > 0:
                 sensor = sensors[0]
             else:
-                continue  # because it is not a comp file
+                continue  # because it is not a temp file
             header = sensor['header']
             header.append('datetime')
             msg = 'Sending backup {}'.format(temp_file)
@@ -269,20 +271,31 @@ class Bridge():
     def delete_old_files(self):
         current_time = time.time()
         txt_data = glob.glob('{}\\*'.format(self.basic_options['data_path']))
+
         for f in txt_data:
             name = None
             file_name = path.basename(f)
+            if not file_name.endswith(self.file_extensions):# exclude other files
+                continue
             if 'log' not in file_name:
-                try:
-                    name = file_name.split('_')[-1].split('.')[0]
-                except Exception as ex:
-                    pass
+
+                file_sensors = [l for l in self.sensors_config
+                                if l['name'] in file_name]
+
+                if len(file_sensors) > 0:
+                    name = file_name
+
+            elif 'log' in file_name:
+                name = 'log'
             else:
-                name = ''
+                continue
             if name is None:
-                continue # not sensors bridge file
+                continue
+
             creation_time = path.getctime(f)
-            if (current_time - creation_time) // (24 * 3600) >= self.basic_options['file_keep_limit']:
+            if (current_time - creation_time) / (24 * 3600) >= \
+                    self.basic_options['file_keep_limit']:
+
                 unlink(f)
                 msg = '{} removed'.format(f)
                 msg_with_time = self.create_log(msg, name)
@@ -298,9 +311,9 @@ class Bridge():
     def read_udp(self):
         show_no_internet_error = True
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-        # self.connect_to_server('Ancillary')
+
         sock.bind(('', self.basic_options['udp_port']))
-        # program_starts = time.time()
+
         while True:
             if STOP:
                 break
@@ -1056,7 +1069,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         sensors_config = []
         basic_options = {}
         server_options = {}
-        # i is always in range 4 in my code
+
         for row in range(self.sensors_config_tw.rowCount()):
             conf = {}
 

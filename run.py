@@ -1,15 +1,18 @@
-import multiprocessing
-from multiprocessing import Process
-import json
-from main import Bridge
-with open('config.json') as f:
-    config = json.load(f)
 
-bridge = Bridge(config)
-bridge.delete_old_files()
 if __name__ == '__main__':
+    import multiprocessing
+    from multiprocessing import Process
+    import json
+    from main import Bridge
+
+    with open('config.json') as f:
+        config = json.load(f)
+
     multiprocessing.freeze_support()
 
+    bridge = Bridge(config)
+
+    bridge.delete_old_files()
     processes = []
     # run GPS and meteorology
 
