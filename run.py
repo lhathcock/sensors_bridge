@@ -1,9 +1,9 @@
+import multiprocessing
+from multiprocessing import Process
+import json
+from main import Bridge
 
 if __name__ == '__main__':
-    import multiprocessing
-    from multiprocessing import Process
-    import json
-    from main import Bridge
 
     with open('config.json') as f:
         config = json.load(f)

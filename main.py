@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import (
 from ui.sensorsbridge import Ui_SensorsBridge
 
 SESSION = None
+VERIFY_SECURE = True
 ROOT_PATH = path.dirname(path.realpath(__file__))
 DEFAULT_CONFIG = {
     "ecotriplet2": {
@@ -89,12 +90,11 @@ class Bridge():
         headers = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept": "text/plain"}
         SESSION = requests.Session()
-        verify_ssl = False
 
         try:
             response = SESSION.post(
                 self.server_options['server_login'],
-                data=params, headers=headers, verify=verify_ssl
+                data=params, headers=headers, verify=VERIFY_SECURE
             )
             if response.status_code != 200:
                 if not show_no_internet_error:
@@ -167,14 +167,12 @@ class Bridge():
         if SESSION is None:
             return False
         url = '{}{}'.format(self.server_options['server'], sensor['name'])
-        verify_ssl = False
-        # if self.server_options['server'].startswith('https'):
-        #     verify_ssl = True
-        # print(verify_ssl)
+
         try:
-            response = SESSION.post(url, data=data, verify=verify_ssl)
+            response = SESSION.post(url, data=data, verify=VERIFY_SECURE)
             if response.status_code != 200:
-                msg = 'Error: {} Failed to send {} at port {}. Saving it to local file.'.format(
+                msg = 'Error: {} Failed to send {} at port {}. ' \
+                      'Saving it to local file.'.format(
                     response.status_code, sensor['name'], sensor['code']
                 )
 
@@ -912,11 +910,12 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         file's sensors_config property.
         :return:
         """
+        self.sensors_config_tw.setRowCount(0)
         for idx, (conf) in enumerate(self.sensors_config):
 
             self.sensors_config_tw.insertRow(idx)
             item0 = QTableWidgetItem(conf['label'])
-            # print (conf)
+
             self.sensors_config_tw.setItem(idx, 0, item0)
             combo = QComboBox()
             for t in self.interfaces:
@@ -981,6 +980,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         Creates an empty log tab for all the sensors.
         :return:
         """
+        self.log_tab.clear()
         for sensor in self.sensors_config:
             log_box = QPlainTextEdit(self.parent())
 
