@@ -33,7 +33,8 @@ SESSION = None
 VERIFY_SECURE = True
 ROOT_PATH = path.dirname(path.realpath(__file__))
 SB_USER_PATH = path.join(expanduser('~'), '.SensorsBridge')
-mkdir(SB_USER_PATH)
+if not path.isdir(SB_USER_PATH):
+    mkdir(SB_USER_PATH)
 SETTINGS_PATH = path.join(SB_USER_PATH, 'settings.txt')
 DEFAULT_CONFIG = {
     "ecotriplet2": {
