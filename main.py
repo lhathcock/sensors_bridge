@@ -1,9 +1,10 @@
 import json
 import csv
 import re
+import signal
 import threading
 import time
-from os import remove, path, SEEK_END, unlink
+from os import remove, path, SEEK_END, unlink, kill
 import serial
 import socket
 import glob
@@ -31,6 +32,7 @@ from ui.sensorsbridge import Ui_SensorsBridge
 SESSION = None
 VERIFY_SECURE = True
 ROOT_PATH = path.dirname(path.realpath(__file__))
+SETTINGS_PATH = path.join(ROOT_PATH, 'settings.txt')
 DEFAULT_CONFIG = {
     "ecotriplet2": {
         "separator": "\t+",
@@ -484,7 +486,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
                     self.config = json.load(f)
 
                 self.populate_gui()
-                with open('.settings', 'w') as s:
+                with open(SETTINGS_PATH, 'w') as s:
                     s.write(self.config_path)
 
     def init_gui(self):
@@ -525,14 +527,16 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         Load the default configuration if there is no configuration already set.
         :return:
         """
-        if path.isfile('.settings'):
-            with open('.settings', 'r') as s:
+        if path.isfile(SETTINGS_PATH):
+            with open(SETTINGS_PATH, 'r') as s:
 
                 self.config_path = s.readline().strip()
                 self.config_folder = path.dirname(self.config_path)
         else:
             self.config_path = path.join(ROOT_PATH, 'config.json')
             self.config_folder = ROOT_PATH
+            with open(SETTINGS_PATH, 'w') as s:
+                s.write(self.config_path)
 
         if path.isfile(self.config_path):
 
@@ -988,39 +992,45 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             self.log_boxes[sensor['name']] = log_box
             self.log_tab.addTab(log_box, sensor['label'])
 
-    def read_a_file(self, file_path):
+    def read_a_file(self, file_path, name):
         """
         Reads a log or data file from a file path.
         :param file_path: The file path
         :type file_path: String
+        :param name: Sensor or type name
+        :type name: String
         :return:
         """
         the_file = open(file_path, 'r')
-        name = None
-        file_name = path.basename(file_path)
-        if 'log' not in file_name:
 
-            name = file_name.split('_')[-1].split('.')[0]
-
+        # file_name = path.basename(file_path)
+        # if 'log_' in file_name:
+        #     name = 'log'
+        # else:
+        #     name = file_name.split('_')[-1].split('.')[0]
+        # # print (name)
         the_file.seek(0, SEEK_END)  # End-of-file
+        # print (file_path)
         while True:
+            if STOP:
+                break
             line = the_file.readlines()
 
             if not line:
-                time.sleep(0.1)  # Sleep briefly
                 continue
             line_str = ''.join(line).lower()
+            # print(name, line)
             if 'error' in line_str or 'trackback' in line_str:
                 self.log.emit('<br>'.join(line))
             else:
                 for r in line:
 
-                    if name is not None:
+                    if name != 'log':
                         # print(name, r)
                         self.log.emit('{}${}'.format(name, r))
                     else:
                         # print(r)
-                        self.log.emit(r)
+                        self.log.emit(r)# the log file already has name$message layout
 
         the_file.close()
 
@@ -1038,8 +1048,10 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             return
 
         t = threading.Thread(
-            name='background', target=self.read_a_file, args=(log_file,))
+            name='background', target=self.read_a_file, args=(log_file, 'log',)
+        )
         t.start()
+        return t
 
     def run_reading_data_file(self, sensor):
         """
@@ -1056,9 +1068,11 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         if not path.isfile(file_path):
             f = open(file_path, 'w')
             f.close()
-
-        t = threading.Thread(name='background', target=self.read_a_file, args=(file_path,))
+        # print (file_path)
+        t = threading.Thread(name='background', target=self.read_a_file,
+                             args=(file_path,sensor['name']))
         t.start()
+        return t
 
     def read_config(self):
         """
@@ -1114,6 +1128,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         """
         if '$' in str:
             names = str.split('$')
+
             log_box = self.log_boxes[names[0]]
 
             if '<br>' in names[1]:
@@ -1137,7 +1152,7 @@ if __name__ == "__main__":
     # Prevent the multiprocessing window from executiving this several times.
     multiprocessing.freeze_support()
     processes = []
-
+    threads = []
 
     def except_hook(cls, exception, traceback):
         """
@@ -1147,6 +1162,7 @@ if __name__ == "__main__":
 
 
     def run_process(app):
+
         """
         Runs the data capture and sending after reading and saving the configuration.
         It uses multiprocessing library to run data capture of all sensors simultaneously.
@@ -1156,6 +1172,12 @@ if __name__ == "__main__":
         :type app: Class
         :return:
         """
+        global STOP
+        if len(processes) > 0:
+            processes.clear()
+        if len(threads) > 0:
+            threads.clear()
+        STOP = False
         config = app.save_config(True)
         if len(config['basic_options']['data_path'].strip())==0:
             app.show_message('Error', 'Unable to run as no data folder is selected.')
@@ -1166,13 +1188,16 @@ if __name__ == "__main__":
         if len(config['sensors_config']) == 0:
             app.show_message('Error', 'Unable to run as no sensor configuration is filled out.')
             return
+
         for sensor in config['sensors_config']:
             if app.data_log_ck.isChecked():
-                app.run_reading_data_file(sensor)
+                t = app.run_reading_data_file(sensor)
+                threads.append(t)
 
         app.buttonBox.button(QDialogButtonBox.Ok).setDisabled(True)
         if app.sys_msg_log_ck.isChecked():
-            app.run_reading_log_file()
+            t = app.run_reading_log_file()
+            threads.append(t)
         bridge = Bridge(config)
         app.buttonBox.button(QDialogButtonBox.Ok).setText("Running...")
         app.toolBox.setCurrentIndex(2)
@@ -1194,13 +1219,16 @@ if __name__ == "__main__":
 
                 p = Process(target=bridge.read_com, args=(sensor,))
                 p.name = sensor['label']
+                p.daemon = True
                 processes.append(p)
 
         p0 = Process(target=bridge.read_udp)
         p0.name = 'GPS Position'
+        p0.daemon = True
         processes.append(p0)
         try:
             for p in processes:
+                # print (p)
                 p.start()
         except AssertionError:
             pass
@@ -1219,8 +1247,12 @@ if __name__ == "__main__":
         STOP = True
         app.buttonBox.button(QDialogButtonBox.Ok).setText("Run")
         try:
-            for p in processes:
+            for i, p in enumerate(processes):
                 p.terminate()
+
+            for j, t in enumerate(threads):
+                t.exit()
+                # threads.pop(j)
         except AttributeError:
             pass
         except AssertionError:
