@@ -4,7 +4,7 @@ import re
 import signal
 import threading
 import time
-from os import remove, path, SEEK_END, unlink, kill
+from os import remove, path, SEEK_END, unlink, kill, mkdir
 import serial
 import socket
 import glob
@@ -32,7 +32,9 @@ from ui.sensorsbridge import Ui_SensorsBridge
 SESSION = None
 VERIFY_SECURE = True
 ROOT_PATH = path.dirname(path.realpath(__file__))
-SETTINGS_PATH = path.join(ROOT_PATH, 'settings.txt')
+SB_USER_PATH = path.join(expanduser('~'), '.SensorsBridge')
+mkdir(SB_USER_PATH)
+SETTINGS_PATH = path.join(SB_USER_PATH, 'settings.txt')
 DEFAULT_CONFIG = {
     "ecotriplet2": {
         "separator": "\t+",
