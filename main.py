@@ -51,7 +51,7 @@ DEFAULT_CONFIG = {
         "separator": ",",
         "baud_rate": 9600,
         "byte_size": 72,
-        "sent_config": [b'setbaud=9600\r\n', b'setbaud=9600\r\n', b'SetFormat=1\r\n', b'SetAvg=2\r\n', b'Start\r\n']
+        "extra_config": [b'setbaud=9600\r\n', b'setbaud=9600\r\n', b'SetFormat=1\r\n', b'SetAvg=2\r\n', b'Start\r\n']
     },
     "ecotriplet1": {
         "separator": "\t+",
@@ -396,8 +396,8 @@ class Bridge():
             #     a_serial.write(b'SetFormat=1\r\n')
             #     a_serial.write(b'SetAvg=2\r\n')
             #     a_serial.write(b'Start\r\n')
-            if 'set_config' in DEFAULT_CONFIG[sensor['name']].keys():
-                for config in DEFAULT_CONFIG[sensor['name']]['set_config']:
+            if 'extra_config' in DEFAULT_CONFIG[sensor['name']].keys():
+                for config in DEFAULT_CONFIG[sensor['name']]['extra_config']:
                     a_serial.write(config)
 
             header = sensor['header'].split(',')
