@@ -1,15 +1,15 @@
 {
   "basic_options": {
-    "data_path": "",
-    "file_keep_limit": 3,
-    "udp_port": 5000
+    "data_path": "C:/Users/User/Desktop/data",
+    "file_keep_limit": 20,
+    "udp_port": 50000
   },
   "server_options": {
-    "server": "https://water.geosci.msstate.edu/monitor/",
-    "server_login": "https://water.geosci.msstate.edu/login",
-    "username": "",
-    "password": "",
-    "send_data": false
+    "server": "https://water.geosci.msstate.edu/monitoradmin/",
+    "server_login": "https://water.geosci.msstate.edu/monitoradmin/signin",
+    "username": "msuseatracboat",
+    "password": "44dffA33tv",
+    "send_data": true
   },
   "sensors_config": [
     {
@@ -24,7 +24,7 @@
       "label": "Co2ProCV",
       "name": "co2procv",
       "type": "COM port",
-      "code": "COM3",
+      "code": "COM4",
       "header": "start,year,month,day,hour,minute,second,zero_ad,current_ad,measured_co2,avarage_irga_temperature,humidity,humidity_sensor_temperature,gas_stream_pressure,igr_detector_temperature",
       "exclude": ""
     },
@@ -32,7 +32,7 @@
       "label": "Ecotriplet 1",
       "name": "ecotriplet1",
       "type": "COM port",
-      "code": "COM4",
+      "code": "COM5",
       "header": "date,time,wavelength1,chl_raw,wavelength2,peryth_raw,wavelength3,pcyan_raw,wavelength4",
       "exclude": ""
     },
@@ -40,7 +40,7 @@
       "label": "Ecotriplet 2",
       "name": "ecotriplet2",
       "type": "COM port",
-      "code": "COM5",
+      "code": "COM6",
       "header": "date,time,wavelength1,bb_470_raw,wavelength2,bb_532_raw,wavelength3,bb_650_raw,wavelength4",
       "exclude": ""
     },
@@ -48,7 +48,7 @@
       "label": "Ecotriplet 3",
       "name": "ecotriplet3",
       "type": "COM port",
-      "code": "COM6",
+      "code": "COM7",
       "header": "date,time,wavelength1,turbidity_595_nm_raw,wavelength2,turbidity_700_nm_raw,wavelength3,cdom_460_nm_raw,wavelength4",
       "exclude": ""
     },
@@ -56,7 +56,7 @@
       "label": "Dissolved Oxygen",
       "name": "dissolvedoxygen",
       "type": "COM port",
-      "code": "COM7",
+      "code": "COM3",
       "header": "raw_phase_delay,raw_thermistor_voltage,oxygen_ml_l,temperature",
       "exclude": ""
     },
