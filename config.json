@@ -5,10 +5,10 @@
     "udp_port": 50000
   },
   "server_options": {
-    "server": "https://water.geosci.msstate.edu/monitoradmin/",
-    "server_login": "https://water.geosci.msstate.edu/monitoradmin/signin",
-    "username": "msuseatracboat",
-    "password": "44dffA33tv",
+    "server": "https://water.geosci.msstate.edu/monitor/",
+    "server_login": "https://water.geosci.msstate.edu/login",
+    "username": "",
+    "password": "",
     "send_data": true
   },
   "sensors_config": [

@@ -71,7 +71,11 @@ STOP = False
 class Bridge():
 
     def __init__(self, config):
-
+        """
+        Reads data from connected sensors and sends data to the receiving server.
+        :param config: The configuration containing the sensors and other settings.
+        :param type: Object
+        """
         self.config = config
         self.sensors_config = config['sensors_config']
         self.basic_options = config['basic_options']
@@ -119,6 +123,16 @@ class Bridge():
             return False
 
     def create_log(self, message, sensor_name='', show_message=True):
+        """
+        Creates user log and saves it to file is output it to stdout.
+        :param message: The log message.
+        :type message: String
+        :param sensor_name: The name of the sensor for which the log is outputted
+        :type sensor_name: String
+        :param show_message: A boolean showing or hiding log on stdout.
+        :type show_message: Boolean
+        :return:
+        """
         now = datetime.now()
         dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
         dt_name_str = now.strftime("%d_%m_%Y")
@@ -136,6 +150,14 @@ class Bridge():
         return msg.strip()
 
     def save_to_file(self, sensor, data):
+        """
+        Saves data to a file.
+        :param sensor: A sensor dictionary containing all the details of a sensor.
+        :type sensor: Object
+        :param data: The data to be written to a file.
+        :type data: String
+        :return:
+        """
         now = datetime.now()
         dt_string = now.strftime("%d_%m_%Y")
         file_name = '{}_{}.csv'.format(dt_string, sensor['name'])
@@ -153,7 +175,14 @@ class Bridge():
             msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
 
     def save_to_temp_file(self, sensor, data):
-        # print (data)
+        """
+        Save data to temporary files till internet is reconnected.
+        :param sensor: The sensor object
+        :type sensor: Object
+        :param data: The key/value data
+        :type data: Dictionary
+        :return:
+        """
         now = datetime.now()
         dt_string = now.strftime("%d_%m_%Y_temp")
         file_name = '{}_{}.csv'.format(dt_string, sensor['name'])
@@ -169,6 +198,15 @@ class Bridge():
             wr.writerow(data.values())
 
     def send_to_server(self, sensor, data):
+        """
+        Send data to the server.
+        :param sensor: The sensor object
+        :type sensor: Object
+        :param data: The key/value data
+        :type data: Dictionary
+        :return: True if sent or False if not
+        :rtype: Boolean
+        """
         global SESSION
         if SESSION is None:
             return False
@@ -197,6 +235,12 @@ class Bridge():
         # print (response.status_code)
 
     def send_temp_files_by_com(self, sensor):
+        """
+        Send temporary data to the server by port.
+        :param sensor: The sensor object
+        :type sensor: Object
+        :return:
+        """
         global SESSION
         if SESSION is None:  # dont send if the user hasn't logged in
             return
@@ -236,6 +280,10 @@ class Bridge():
         header.remove('datetime')
 
     def send_temp_files(self):
+        """
+        Send temporary data to the server.
+        :return:
+        """
         global SESSION
         if SESSION is None:  # dont send if the user hasn't logged in
             return
@@ -273,6 +321,10 @@ class Bridge():
             header.remove('datetime')
 
     def delete_old_files(self):
+        """
+        Delete old files in the data folder.
+        :return:
+        """
         current_time = time.time()
         txt_data = glob.glob('{}\\*'.format(self.basic_options['data_path']))
 
@@ -306,6 +358,14 @@ class Bridge():
                 print(msg_with_time)
 
     def filter_data(self, data, sensor):
+        """
+        Exclude data by key/header.
+        :param sensor: The sensor object
+        :type sensor: Object
+        :param data: The key/value data
+        :type data: Dictionary
+        :return:
+        """
         new_dict = {}
         for key, value in data.items():
             if key not in sensor['exclude']:
@@ -313,6 +373,10 @@ class Bridge():
         return new_dict
 
     def read_udp(self):
+        """
+        Reads UDP stream and send it to the server and write it a file.
+        :return:
+        """
         show_no_internet_error = True
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
 
@@ -351,7 +415,12 @@ class Bridge():
                     self.manage_data(data, sensor, show_no_internet_error)
 
     def process_location(self, data):
-        # convert nmea lat lon to decimal degrees.
+        """
+        Convert nmea lat lon to decimal degrees.
+        :param data: The key/value data
+        :type data: Dictionary
+        :return:
+        """
         # ddmm.mmmm lat
         # dddmm.mmmm lon
         # dd + mm.mmmm/60 for latitude
@@ -382,6 +451,12 @@ class Bridge():
             data['longitude'] = 'null'
 
     def read_com(self, sensor):
+        """
+        Reads COM port stream and send it to the server and write it a file.
+        :param sensor: The sensor object
+        :type sensor: Object
+        :return:
+        """
         show_no_internet_error = True
         try:
             a_serial = serial.Serial(
@@ -390,12 +465,7 @@ class Bridge():
                 bytesize=serial.EIGHTBITS,
                 stopbits=serial.STOPBITS_ONE
             )
-            # if sensor['code'] == 'COM3': # TODO add the commands below to the config
-            #     a_serial.write(b'setbaud=9600\r\n')
-            #     a_serial.write(b'setbaud=9600\r\n')
-            #     a_serial.write(b'SetFormat=1\r\n')
-            #     a_serial.write(b'SetAvg=2\r\n')
-            #     a_serial.write(b'Start\r\n')
+
             if 'extra_config' in DEFAULT_CONFIG[sensor['name']].keys():
                 for config in DEFAULT_CONFIG[sensor['name']]['extra_config']:
                     a_serial.write(config)
@@ -426,6 +496,17 @@ class Bridge():
             # print(msg_with_time)
 
     def manage_data(self, data, sensor, show_no_internet_error):
+        """
+        Sends to the server and saves to a local file.
+        If there is no internet, it saves it to a temporary file.
+        :param sensor: The sensor object
+        :type sensor: Object
+        :param data: The key/value data
+        :type data: Dictionary
+        :param show_no_internet_error: True if error should be shown or False if not.
+        :type show_no_internet_error: Boolean
+        :return:
+        """
         # print (SESSION,port_name,  data )
         if SESSION is not None:
             # if port_name == 'GPRMC':

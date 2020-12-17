@@ -38,7 +38,7 @@ In config.json set:
 - Change COM3, COM4, COM5, COM6, COM7 to their respective port in which they are connected to your computer.
 - If you have data streamed through a UDP port, modify `udp_port`
 ---
-In you would like to send data to your server fill out the following:
+If you would like to send data to your server, fill out the following:
 
 - "server": "https://servername.org/somepath/"
 - "server_login": "https://water.geosci.msstate.edu/monitoradmin/signin"
