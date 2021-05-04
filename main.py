@@ -45,7 +45,8 @@ DEFAULT_CONFIG = {
     "co2procv": {
         "separator": ",",
         "baud_rate": 19200,
-        "byte_size": 72
+        "byte_size": 72,
+        "extra_config": [b'\x1b', b'\x1b', b'1\r\n']
     },
     "dissolvedoxygen": {
         "separator": ",",
