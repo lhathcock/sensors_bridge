@@ -46,7 +46,7 @@ DEFAULT_CONFIG = {
         "separator": ",",
         "baud_rate": 19200,
         "byte_size": 72,
-        "extra_config": [b'\x1b', b'\x1b', b'1\r\n']
+        "extra_config": [b'\x1B', b'\x1B', b'1', b'1']
     },
     "dissolvedoxygen": {
         "separator": ",",
@@ -120,7 +120,7 @@ class Bridge():
             return True
         except:
             msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
-            print(msg_with_time)
+            # print(msg_with_time)
             return False
 
     def create_log(self, message, sensor_name='', show_message=True):
@@ -481,8 +481,24 @@ class Bridge():
                 c = a_serial.readline()
 
                 row = re.split(separator, c.decode().strip())
-
+                # if sensor['name'] == 'co2procv':
+                #     print(row)
                 if len(row) != len(header):
+                    #TODO check the length of row when pco2 is not connected and try to connect pyserial here.
+                    # print (len(row))
+                    if DEFAULT_CONFIG[sensor['name']] == 'co2procv' and row == 'Stopping user interface':
+                        a_serial = serial.Serial(
+                            sensor['code'], DEFAULT_CONFIG[sensor['name']]['baud_rate'],
+                            parity=serial.PARITY_NONE,
+                            bytesize=serial.EIGHTBITS,
+                            stopbits=serial.STOPBITS_ONE
+                        )
+                        for config in DEFAULT_CONFIG[sensor['name']]['extra_config']:
+                            a_serial.write(config)
+                        print ('connected to ', sensor['name'])
+
+                    msg_with_time = self.create_log(row, sensor['name'])
+                    # print(msg_with_time)
                     continue
                 data = dict(zip(header, row))
 
@@ -490,7 +506,6 @@ class Bridge():
 
                 self.manage_data(data, sensor, show_no_internet_error)
                 # print (data)
-            #
         except:
             msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
             # print('Failed data: ', sensor['code'], data)

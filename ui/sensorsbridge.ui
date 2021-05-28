@@ -50,6 +50,9 @@
             <property name="text">
              <string>System messages</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="3" column="0">
@@ -94,6 +97,9 @@
            <widget class="QCheckBox" name="data_log_ck">
             <property name="text">
              <string>Data</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -206,8 +212,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>939</width>
-        <height>421</height>
+        <width>136</width>
+        <height>140</height>
        </rect>
       </property>
       <attribute name="label">
