@@ -1,4 +1,5 @@
-build
+build/SensorsBridge
+build/SensorsBridgeone
 venv
 env
 .idea
