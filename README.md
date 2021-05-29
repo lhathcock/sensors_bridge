@@ -46,10 +46,26 @@ If you would like to send data to your server, fill out the following:
 - "password": "somepassword"
 - If you are not sending data to a server make sure to set `send_data` to `false`.
 
-Usage
+Using the Standalone Script
 ---
 - Run run.py or double click `start_sensors_bridge.bat` file. It will start reading and saving data to the `data_path`.
 - You can run the `main.py` script as a schedule task using `sensors_bridge_task.xml`.
+
+Compiling the Executables and  Installer
+---
+The Installer and Portable versions are 
+available in the `dis` folder of the 
+repository. However, if you need to modify 
+the code and rebuild the installer, the 
+following steps needs to be followed. 
+1. Modify `SensorsBridgeone.spec` and `SensorsBridge.spec` path `D:\\MSU\\watermonitor\\sensors_bridge` and 
+`build/installer/installer_final.iss` path `D:\MSU\watermonitor\sensors_bridge` using any text editor
+ a path where the repository is located in your computer.
+1. Run `pyinstaller --clean SensorsBridgeone.spec` to build the portable version.
+1. Run `pyinstaller --clean SensorsBridge.spec` to build the installable version.
+1. Download and install Inno Setup to create a setup file for the installable version created in Step 2.
+1. Open Inno Setup and Open the file `build/installer/installer_final.iss`
+1. Click on Build > Compile to create the Setup file. It will save it to the `dist` folder of your repository.
 
 ## App Info
 
