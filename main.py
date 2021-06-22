@@ -1,10 +1,10 @@
 import json
 import csv
 import re
-import signal
+
 import threading
 import time
-from os import remove, path, SEEK_END, unlink, kill, mkdir
+from os import remove, path, SEEK_END, unlink, mkdir
 import serial
 import socket
 import glob
@@ -52,7 +52,7 @@ DEFAULT_CONFIG = {
         "separator": ",",
         "baud_rate": 9600,
         "byte_size": 72,
-        "extra_config": [b'setbaud=9600\r\n', b'setbaud=9600\r\n', b'SetFormat=1\r\n', b'SetAvg=2\r\n', b'Start\r\n']
+        "extra_config": [b'setbaud=9600\r\n', b'setbaud=9600\r\n', b'SetFormat=1\r\n', b'SetAvg=2', b'Start']
     },
     "ecotriplet1": {
         "separator": "\t+",
@@ -471,9 +471,22 @@ class Bridge():
                 for config in DEFAULT_CONFIG[sensor['name']]['extra_config']:
                     a_serial.write(config)
 
-            header = sensor['header'].split(',')
+
+            if sensor['name'] == 'co2procv':
+                a_serial.close()
+                # print ('Reconnecting co2procv')
+                a_serial = serial.Serial(
+                    sensor['code'], DEFAULT_CONFIG[sensor['name']]['baud_rate'],
+                    parity=serial.PARITY_NONE,
+                    bytesize=serial.EIGHTBITS,
+                    stopbits=serial.STOPBITS_ONE
+                )
+                for config in DEFAULT_CONFIG[sensor['name']]['extra_config']:
+                    a_serial.write(config)
+                # print('connected to ', sensor['name'])
 
             separator = DEFAULT_CONFIG[sensor['name']]['separator']
+            header = sensor['header'].split(',')
             while True:
                 if STOP:
                     break
@@ -481,24 +494,9 @@ class Bridge():
                 c = a_serial.readline()
 
                 row = re.split(separator, c.decode().strip())
-                # if sensor['name'] == 'co2procv':
-                #     print(row)
-                if len(row) != len(header):
-                    #TODO check the length of row when pco2 is not connected and try to connect pyserial here.
-                    # print (len(row))
-                    if DEFAULT_CONFIG[sensor['name']] == 'co2procv' and row == 'Stopping user interface':
-                        a_serial = serial.Serial(
-                            sensor['code'], DEFAULT_CONFIG[sensor['name']]['baud_rate'],
-                            parity=serial.PARITY_NONE,
-                            bytesize=serial.EIGHTBITS,
-                            stopbits=serial.STOPBITS_ONE
-                        )
-                        for config in DEFAULT_CONFIG[sensor['name']]['extra_config']:
-                            a_serial.write(config)
-                        print ('connected to ', sensor['name'])
 
+                if len(row) != len(header):
                     msg_with_time = self.create_log(row, sensor['name'])
-                    # print(msg_with_time)
                     continue
                 data = dict(zip(header, row))
 
@@ -1019,16 +1017,19 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         file's sensors_config property.
         :return:
         """
+        config_COMs = []
         self.sensors_config_tw.setRowCount(0)
         for idx, (conf) in enumerate(self.sensors_config):
 
             self.sensors_config_tw.insertRow(idx)
             item0 = QTableWidgetItem(conf['label'])
-
+            if 'COM' in conf['code']:
+                config_COMs.append(conf['code'])
             self.sensors_config_tw.setItem(idx, 0, item0)
             combo = QComboBox()
             for t in self.interfaces:
                 combo.addItem(t)
+                # set value of either COM or UDP ports based on config
                 if 'COM' in conf['code']:
                     combo.setCurrentIndex(0)
                 else:
@@ -1037,9 +1038,11 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
 
             if 'COM' in conf['code']:
                 combo2 = QComboBox()
+                # Read available system ports and add them to the combobox
+
                 for com in self.com_ports:
                     combo2.addItem(com)
-
+                # Find the current COM port index in the combobox and set it active
                 index = combo2.findText(conf['code'], Qt.MatchFixedString)
 
                 if index >= 0:
@@ -1066,6 +1069,14 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             btn2.clicked.connect(self.show_list)
             self.sensors_config_tw.setItem(idx, 4, item4)
             self.sensors_config_tw.setCellWidget(idx, 4, btn_widget2)
+
+        disconnected_COMs = [c for c in config_COMs if c not in self.com_ports]
+        # print (disconnected_COMs)
+        if len(disconnected_COMs) > 0:
+            self.show_message('Error','{} are not connected to the system.\n'
+                                      'Make sure that the sensor(s) are powered on and connected.'.format(
+                                    ', '.join(sorted(config_COMs))))
+
 
     def create_table_edit_button(self):
         """
