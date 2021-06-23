@@ -52,7 +52,7 @@ DEFAULT_CONFIG = {
         "separator": ",",
         "baud_rate": 9600,
         "byte_size": 72,
-        "extra_config": [b'setbaud=9600\r\n', b'setbaud=9600\r\n', b'SetFormat=1\r\n', b'SetAvg=2', b'Start']
+        "extra_config": [b'setbaud=9600\r\n', b'setbaud=9600\r\n', b'SetFormat=1\r\n', b'SetAvg=2\r\n', b'Start\r\n']
     },
     "ecotriplet1": {
         "separator": "\t+",
