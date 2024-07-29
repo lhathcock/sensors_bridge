@@ -20,6 +20,13 @@ It is a free software under GNU General Public License 3.
 - Install SensorsBridge using the installer SensorsBridgeInstaller_v1.0.0.exe
 - You can run SensorsBridgePortable_v1.0.0.exe without installation   
 
+## Using Standalone Server Scripts
+
+An addition to this code is the "send_data_files_tk.py" file. This separates the sending to the server
+from the main software, and is primarily a temporary file to manage issues occurring when the network
+is sporadic, leading to sensor reads dropping readings and not writing to the local data files. This
+will eventually be rolled into the main code in a cleaner manner, but is added in this manner for
+time-related purposes.
 
 ## Developer Installation
 
@@ -73,9 +80,10 @@ following steps needs to be followed.
 - Wondimagegn Tesfaye Beshah
 - Jane Moorhead
 - Dr. Padmanava Dash
+- Lee Hathcock
 
 ### Version
-1.0.0
+1.0.1
 
 ### License
 [GNU General Public License Version 3](https://github.com/wondie/sensors_bridge/blob/master/LICENSE)
