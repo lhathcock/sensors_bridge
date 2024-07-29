@@ -28,6 +28,9 @@ is sporadic, leading to sensor reads dropping readings and not writing to the lo
 will eventually be rolled into the main code in a cleaner manner, but is added in this manner for
 time-related purposes.
 
+When using this script, the server sending in the main software should be *disabled*. This can be done
+with the checkbox next to the server options, or edited within the configuration file.
+
 ## Developer Installation
 
 - Install Python 3.6 
