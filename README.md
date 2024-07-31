@@ -20,6 +20,19 @@ It is a free software under GNU General Public License 3.
 - Install SensorsBridge using the installer SensorsBridgeInstaller_v1.0.0.exe
 - You can run SensorsBridgePortable_v1.0.0.exe without installation   
 
+## Sending to Server
+
+The functionality of the original version has changed somewhat - the processes that handle serial/UDP
+sensor reads now no longer try to connect to the server as well. That has been spun off to a different
+function within the hardware. Setting the "Send Interval" parameter (in seconds) will specify how often
+data should be sent. The function will send everything in the data folder that is a sensor CSV file.
+Upon a failed run (lost network connection), the sensor's "_lastline.txt" file should contain the last
+valid line sent, and will resume upon reestablished network link.
+
+Functionally, this only uses one thread to send the data, so sensor data will come in serially (in the
+order of specified sensors), as opposed to separate threads for each sensor. This will potentially be
+changed to a thread per sensor as before, but for now remains untouched.
+
 ## Using Standalone Server Scripts
 
 An addition to this code is the "send_data_files_tk.py" file. This separates the sending to the server
