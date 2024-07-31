@@ -105,7 +105,7 @@ class Bridge():
         try:
             response = SESSION.post(
                 self.server_options['server_login'],
-                data=params, headers=headers, verify=VERIFY_SECURE
+                data=params, headers=headers, verify=VERIFY_SECURE, timeout=5
             )
             if response.status_code != 200:
                 if not show_no_internet_error:
@@ -118,8 +118,9 @@ class Bridge():
                 SESSION = None
                 return False
             return True
-        except:
+        except Exception as e:
             msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
+            SESSION = None
             # print(msg_with_time)
             return False
 
@@ -214,7 +215,7 @@ class Bridge():
         url = '{}{}'.format(self.server_options['server'], sensor['name'])
 
         try:
-            response = SESSION.post(url, data=data, verify=VERIFY_SECURE)
+            response = SESSION.post(url, data=data, verify=VERIFY_SECURE, timeout=5)
             if response.status_code != 200:
                 msg = 'Error: {} Failed to send {} at port {}. ' \
                       'Saving it to local file.'.format(
@@ -229,9 +230,10 @@ class Bridge():
                 # if com == 'GPRMC':
                 # print ('Sent {} {}'.format(sensor['name'], data))
                 return True
-        except:
+        except Exception as e:
             msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
             print(msg_with_time)
+            SESSION = None
             return False
         # print (response.status_code)
 
@@ -521,6 +523,7 @@ class Bridge():
         :type show_no_internet_error: Boolean
         :return:
         """
+        """
         # print (SESSION,port_name,  data )
         if SESSION is not None:
             # if port_name == 'GPRMC':
@@ -539,8 +542,102 @@ class Bridge():
                     # send data that was not sent due to internet problem
                     if SESSION is not None:
                         self.send_temp_files_by_com(sensor)
+        """
         self.save_to_file(sensor, data)
 
+    def send_data_files_wrapper(self):
+        while True:
+            try:
+                self.send_data_files()
+            except Exception as e:
+                print ("WTH")
+                
+            time.sleep(int(self.server_options['interval']))
+
+    def send_data_files(self):
+        """
+        Send temporary data to the server.
+        :return:
+        """
+        global SESSION
+        #if SESSION is None:  # dont send if the user hasn't logged in
+            #return
+        temp_files = glob.glob(self.basic_options['data_path'] + '/*.csv')
+        print (temp_files)
+        for temp_file in temp_files:  # get com port from temp file
+
+            if not path.exists(temp_file):
+                continue
+            sensors = [l for l in self.sensors_config
+                       if l['name'] in temp_file]
+
+            if len(sensors) > 0:
+                sensor = sensors[0]
+            else:
+                continue  # because it is not a temp file
+            #print(temp_file)
+            #print(sensor)
+            self.connect_to_server(sensor)
+            if SESSION is None:
+                print ("No session, returning.")
+                return
+            
+
+            # debug stuff
+            #SESSION = True
+            
+            #print (sensor)
+            
+            header = sensor['header'].split(',')
+            
+            print (header)
+            header.append('datetime')
+            msg = 'Sending backup {}'.format(temp_file)
+            msg_with_time = self.create_log(msg, sensor['name'])
+            # print(msg_with_time)
+            lastline = temp_file.split('.')[0] + '_lastline.txt'
+            if not path.exists(lastline):
+                f = open(lastline, 'w')
+                f.write('0')
+                f.close()
+                lastlinenum = 0
+                
+            else:
+                f = open(lastline, 'r')
+                lastlinenum = int(f.readline())
+                f.close()
+                
+            with open(temp_file, "r") as f:
+                lines = f.readlines()
+
+                for i in range(lastlinenum, len(lines)):
+                    if lines[i].endswith('\n'):
+                        data = dict(zip(header, lines[i].strip().split(',')))
+                        
+                        try:
+                            response = self.send_to_server(sensor, data)
+                        except:
+                            print ("Sending data failed!")
+                            response = False
+                        if response == False:
+                            f = open(lastline, 'w')
+                            f.write(str(lastlinenum))
+                            f.close()
+                            return
+                        else:
+                            lastlinenum = lastlinenum + 1
+                            if lastlinenum%50 == 0:
+                                print (str(lastlinenum) + "/" + str(len(lines)))
+            
+            # Need to store the last successful processed line.
+            f = open(lastline, 'w')
+            f.write(str(lastlinenum))
+            f.close()
+            
+            msg2 = 'Completed sending backup {}'.format(temp_file)
+            msg_with_time = self.create_log(msg2, sensor['name'])
+            #print(msg_with_time)
+            header.remove('datetime')
 
 class SensorsBridge(QDialog, Ui_SensorsBridge):
     log = pyqtSignal(str)
@@ -611,6 +708,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         pw = self.password_le
         pw.setEchoMode(QLineEdit.Password)
         pw.show()
+        
         self.server_gb.toggled.connect(self.set_connect_to_server)
         self.buttonBox.button(QDialogButtonBox.Ok).setText("Run")
         self.buttonBox.button(QDialogButtonBox.Discard).setText("Stop")
@@ -671,6 +769,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             self.server_login_le.setText(self.server_options['server_login'])
             self.username_le.setText(self.server_options['username'])
             self.password_le.setText(self.server_options['password'])
+            self.interval_le.setText(self.server_options['interval'])
             self.server_gb.setChecked(self.server_options["send_data"])
 
         if 'sensors_config' in self.config.keys():
@@ -1227,6 +1326,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         server_options['server_login'] = self.server_login_le.text()
         server_options['username'] = self.username_le.text()
         server_options['password'] = self.password_le.text()
+        server_options['interval'] = self.interval_le.text()
         server_options['send_data'] = self.server_gb.isChecked()
 
         config['basic_options'] = basic_options
@@ -1330,8 +1430,8 @@ if __name__ == "__main__":
 
             if sensor['type'] == 'COM port':  # To exclude UDP reading
 
-                if config["server_options"]["send_data"]:
-                    bridge.connect_to_server(sensor)
+                #if config["server_options"]["send_data"]:
+                    #bridge.connect_to_server(sensor)
 
                 p = Process(target=bridge.read_com, args=(sensor,))
                 p.name = sensor['label']
@@ -1342,6 +1442,13 @@ if __name__ == "__main__":
         p0.name = 'GPS Position'
         p0.daemon = True
         processes.append(p0)
+        
+        if config["server_options"]["send_data"]:
+            p1 = Process(target=bridge.send_data_files_wrapper)
+            p1.name = 'Server Send'
+            p1.daemon = True
+            processes.append(p1)
+        
         try:
             for p in processes:
                 # print (p)
@@ -1349,7 +1456,7 @@ if __name__ == "__main__":
         except AssertionError:
             pass
 
-        bridge.delete_old_files()
+        #bridge.delete_old_files()
 
 
     def terminate_processes(app):
