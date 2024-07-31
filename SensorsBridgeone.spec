@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['D:\\MSU\\watermonitor\\sensors_bridge'],
+             pathex=['C:\\temp\\sensors_bridge_send_data_test\\send_data_tk_compile\\'],
              binaries=[],
-             datas=[],
+             datas=[('favicon.ico', ',')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -15,7 +15,6 @@ a = Analysis(['main.py'],
              win_private_assemblies=False,
              cipher=block_cipher,
              noarchive=False)
-a.datas += [('favicon.ico','D:\\MSU\\watermonitor\\sensors_bridge\\favicon.ico', 'Data')]
 
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
@@ -25,7 +24,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='SensorsBridgePortable_v1.0.0',
+          name='SensorsBridgePortable_v1.0.1',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
