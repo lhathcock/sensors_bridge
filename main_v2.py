@@ -94,19 +94,27 @@ class Bridge():
         :return: The status of the connection
         :type: Boolean
         """
+        # Can probably simplify this for ArcGIS server. Generate token here? How
+        # do we make sure everything else is still alive?
+        
         global SESSION
-        params = urlencode(
-            {'username': self.server_options['username'],
-             'password': self.server_options['password'], 'f': 'json'})
-        headers = {"Content-type": "application/x-www-form-urlencoded",
-                   "Accept": "text/plain"}
+        params = {
+            'f': 'json',
+            'username': self.server_options['username'],
+            'password': self.server_options['password'],
+            'referer': 'https://www.arcgis.com', 'client': 'referer'
+        }
+        #headers = {"Content-type": "application/x-www-form-urlencoded",
+        #           "Accept": "text/plain"}
+        #print (params)
         SESSION = requests.Session()
 
         try:
             response = SESSION.post(
-                self.server_options['server_login'],
-                data=params, headers=headers, verify=VERIFY_SECURE, timeout=5
+                '{}{}'.format(self.server_options['server_login'], '/sharing/rest/generateToken'),
+                data=params, verify=VERIFY_SECURE, timeout=5
             )
+            #print (response.json())
             if response.status_code != 200:
                 if not show_no_internet_error:
                     msg = 'Error to login {}. {} ({}) data saved ' \
@@ -117,7 +125,13 @@ class Bridge():
                     print(msg_with_time)
                 SESSION = None
                 return False
-            return True
+            try:
+                token = response.json()['token']
+                return token
+            except:
+                msg_with_time = self.create_log("Problem generating token.", sensor['name'])
+                return False
+                
         except Exception as e:
             msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
             SESSION = None
@@ -151,7 +165,7 @@ class Bridge():
             print(msg.strip())
         return msg.strip()
 
-    def save_to_file(self, sensor, data):
+    def save_to_file(self, sensor, data, gpsvar):
         """
         Saves data to a file.
         :param sensor: A sensor dictionary containing all the details of a sensor.
@@ -211,12 +225,19 @@ class Bridge():
         """
         global SESSION
         if SESSION is None:
+            print ("No session.")
             return False
-        url = '{}{}'.format(self.server_options['server'], sensor['name'])
+        url = '{}{}{}{}'.format(self.server_options['server'], '/rest/services/Hosted/', 
+            sensor['name'], '/FeatureServer/0/AddFeatures')
+        url.replace('//', '/')
+        print (data)
+        #print (url)
 
         try:
             response = SESSION.post(url, data=data, verify=VERIFY_SECURE, timeout=5)
-            if response.status_code != 200:
+            print (response.json())
+            success = response.json()['addResults'][0]['success']
+            if success == False:
                 msg = 'Error: {} Failed to send {} at port {}. ' \
                       'Saving it to local file.'.format(
                     response.status_code, sensor['name'], sensor['code']
@@ -375,7 +396,7 @@ class Bridge():
                 new_dict[key] = value
         return new_dict
 
-    def read_udp(self):
+    def read_udp(self, gpsvar):
         """
         Reads UDP stream and send it to the server and write it a file.
         :return:
@@ -389,7 +410,10 @@ class Bridge():
             if STOP:
                 break
             data_b, addr = sock.recvfrom(4096)
-            utc_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S.%f")
+            utc = datetime.utcnow()
+            utc_time = utc.strftime("%m/%d/%Y %H:%M:%S.%f")
+            epochtime = int(round(utc.timestamp() * 1000))
+            
             data_str = data_b.decode()
             # now = time.time()
             if '$' not in data_str:
@@ -410,14 +434,21 @@ class Bridge():
                     # print("{0} {1}".format(now - program_starts, row[0]))
                     data = dict(zip(header, row[1:]))
                     data['datetime'] = utc_time
+                    
                     # print (data)
                     if row[0] == 'GPRMC':
-                        self.process_location(data)
+                        self.process_location(data, gpsvar)
+                    
+                    data['epochtime'] = epochtime
+                    data['datetime'] = utc_time
+                    data['latitude'] = gpsvar[-1]['latitude']
+                    data['longitude'] = gpsvar[-1]['longitude']
+
                     data = self.filter_data(data, self.udp_sensors[code])
                     # print (data)
-                    self.manage_data(data, sensor, show_no_internet_error)
+                    self.manage_data(data, sensor, gpsvar, show_no_internet_error)
 
-    def process_location(self, data):
+    def process_location(self, data, gpsvar):
         """
         Convert nmea lat lon to decimal degrees.
         :param data: The key/value data
@@ -447,13 +478,16 @@ class Bridge():
             lon = (lon_degs + (lon_mins / 60)) * lon_hemi
             data['latitude'] = str(lat)
             data['longitude'] = str(lon)
+            # This is where we want to store our lat/lon to a shared variable!
+            gpsvar.append(data) # Probably a better way to do this.
         except:
             msg_with_time = self.create_log(traceback.format_exc(), 'gpsposition')
             print(msg_with_time)
             data['latitude'] = 'null'
             data['longitude'] = 'null'
-
-    def read_com(self, sensor):
+            gpsvar.append(data) # Probably a better way to do this.
+            
+    def read_com(self, sensor, gpsvar):
         """
         Reads COM port stream and send it to the server and write it a file.
         :param sensor: The sensor object
@@ -492,7 +526,9 @@ class Bridge():
             while True:
                 if STOP:
                     break
-                utc_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S.%f")
+                utc = datetime.utcnow()
+                utc_time = utc.strftime("%m/%d/%Y %H:%M:%S.%f")
+                epochtime = int(round(utc.timestamp() * 1000))
                 c = a_serial.readline()
 
                 row = re.split(separator, c.decode().strip())
@@ -502,16 +538,19 @@ class Bridge():
                     continue
                 data = dict(zip(header, row))
 
+                data['epochtime'] = epochtime
                 data['datetime'] = utc_time
+                data['latitude'] = gpsvar[-1]['latitude']
+                data['longitude'] = gpsvar[-1]['longitude']
 
-                self.manage_data(data, sensor, show_no_internet_error)
+                self.manage_data(data, sensor, gpsvar, show_no_internet_error)
                 # print (data)
         except:
             msg_with_time = self.create_log(traceback.format_exc(), sensor['name'])
             # print('Failed data: ', sensor['code'], data)
             # print(msg_with_time)
 
-    def manage_data(self, data, sensor, show_no_internet_error):
+    def manage_data(self, data, sensor, gpsvar, show_no_internet_error):
         """
         Sends to the server and saves to a local file.
         If there is no internet, it saves it to a temporary file.
@@ -543,12 +582,12 @@ class Bridge():
                     if SESSION is not None:
                         self.send_temp_files_by_com(sensor)
         """
-        self.save_to_file(sensor, data)
+        self.save_to_file(sensor, data, gpsvar)
 
-    def send_data_files_wrapper(self, sensor, temp_file):
+    def send_data_files_wrapper(self, sensor, temp_file): #removed gpsvar
         while True:
             try:
-                self.send_data_files(sensor, temp_file)
+                self.send_data_files(sensor, temp_file) # removed gpsvar
             except Exception as e:
                 print ("Problem sending files.")
                 
@@ -557,10 +596,15 @@ class Bridge():
     def send_data_files(self, sensor, temp_file):
         """
         Send temporary data to the server.
+        
+        For this version, we want to connect to ArcGIS server, which
+        means we'll ask for a token instead, and if we get it, we
+        continue on.
+        
         :return:
         """
         try:
-            self.connect_to_server(sensor)
+            token = self.connect_to_server(sensor)
         except:
             print ("Error connecting to server.")
             
@@ -574,19 +618,15 @@ class Bridge():
         
         #print (sensor)
         
-        header = sensor['header'].split(',')
-        
-        #print (header)
-        header.append('datetime')
         msg = 'Sending backup {}'.format(temp_file)
         msg_with_time = self.create_log(msg, sensor['name'])
         # print(msg_with_time)
         lastline = temp_file.split('.')[0] + '_lastline.txt'
         if not path.exists(lastline):
             f = open(lastline, 'w')
-            f.write('0')
+            f.write('1')
             f.close()
-            lastlinenum = 0
+            lastlinenum = 1
             
         else:
             f = open(lastline, 'r')
@@ -595,13 +635,36 @@ class Bridge():
             
         with open(temp_file, "r") as f:
             lines = f.readlines()
+            header = lines[0].strip().replace('datetime', 'date_time').split(',')
 
             for i in range(lastlinenum, len(lines)):
                 if lines[i].endswith('\n'):
-                    data = dict(zip(header, lines[i].strip().split(',')))
+                    csvlist = lines[i].strip().split(',')
+                    data = dict(zip(header, csvlist))
+                    data['epochtime'] = int(data['epochtime'])
+                    newfeature = [
+                        {
+                            "attributes" : data,
+                            "geometry": {
+                                "x": float(csvlist[header.index('longitude')]),
+                                "y": float(csvlist[header.index('latitude')]),
+                                "spatialReference": {"wkid" : 4326}
+                            }
+                        }
+                    ]
                     
+                    # Will need to assemble lat/lon here as well.
+                    #msg4 = str(data)
+                    #msg4_with_time = self.create_log(msg4, sensor['name'])
+                    
+                    append_params = {
+                        'f': 'json',
+                        'features': json.dumps(newfeature),
+                        'token': token
+                    }
                     try:
-                        response = self.send_to_server(sensor, data)
+                        response = self.send_to_server(sensor, append_params)
+                        #self.create_log("Sent data to server.", sensor['name'])
                     except:
                         print ("Sending data failed!")
                         response = False
@@ -751,6 +814,8 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             self.file_keep_limit_sb.setValue(self.basic_options['file_keep_limit'])
 
             self.udp_port_sb.setValue(self.basic_options['udp_port'])
+            #self.data_log_ck.setChecked(self.basic_options['log_data'])
+            #self.sys_msg_log_ck.setChecked(self.basic_options['sys_msg'])
 
         if 'server_options' in self.config.keys():
             self.server_options = self.config['server_options']
@@ -1216,6 +1281,7 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         the_file.seek(0, SEEK_END)  # End-of-file
         # print (file_path)
         while True:
+            time.sleep(0.01)
             if STOP:
                 break
             line = the_file.readlines()
@@ -1223,8 +1289,8 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
             if not line:
                 continue
             line_str = ''.join(line).lower()
-            # print(name, line)
-            if 'error' in line_str or 'trackback' in line_str:
+            #print(name, line)
+            if 'error' in line_str or 'traceback' in line_str:
                 self.log.emit('<br>'.join(line))
             else:
                 for r in line:
@@ -1268,11 +1334,14 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         dt_string = now.strftime("%d_%m_%Y")
         file_name = '{}_{}.csv'.format(dt_string, sensor['name'])
         file_path = path.join(self.basic_options['data_path'], file_name)
-
+        
+        # 2025/07/25
+        
+        # I think we can rely on the file to be created elsewhere. Hopefully.
+        
         if not path.isfile(file_path):
-            f = open(file_path, 'w')
-            f.close()
-        # print (file_path)
+            return
+            
         t = threading.Thread(name='background', target=self.read_a_file,
                              args=(file_path,sensor['name']))
         t.start()
@@ -1311,6 +1380,8 @@ class SensorsBridge(QDialog, Ui_SensorsBridge):
         basic_options['data_path'] = self.data_folder_lne.text()
         basic_options['file_keep_limit'] = self.file_keep_limit_sb.value()
         basic_options['udp_port'] = self.udp_port_sb.value()
+        basic_options['log_data'] = self.data_log_ck.isChecked()
+        basic_options['sys_msg'] = self.sys_msg_log_ck.isChecked()
         server_options['server'] = self.server_le.text()
         server_options['server_login'] = self.server_login_le.text()
         server_options['username'] = self.username_le.text()
@@ -1359,6 +1430,8 @@ if __name__ == "__main__":
     processes = []
     threads = []
 
+    manager = multiprocessing.Manager()
+
     def except_hook(cls, exception, traceback):
         """
         Fixes the issue of exception not showing in PyQt.
@@ -1396,6 +1469,9 @@ if __name__ == "__main__":
 
         for sensor in config['sensors_config']:
             if app.data_log_ck.isChecked():
+            
+                # 2025/07/24
+                # This is probably why header isn't getting written. Need to modify this function.
                 t = app.run_reading_data_file(sensor)
                 threads.append(t)
 
@@ -1409,7 +1485,10 @@ if __name__ == "__main__":
 
         with open(app.config_path, 'w') as outfile:
             json.dump(config, outfile)
-
+        # Create GPS variable here? Share through processes.
+        gpsvar = []
+        gpsvar = manager.list()
+        
         for sensor in config['sensors_config']:
             msg = 'Started capturing {} data.'.format(
                 sensor['label']
@@ -1422,12 +1501,12 @@ if __name__ == "__main__":
                 #if config["server_options"]["send_data"]:
                     #bridge.connect_to_server(sensor)
 
-                p = Process(target=bridge.read_com, args=(sensor,))
+                p = Process(target=bridge.read_com, args=(sensor,gpsvar,))
                 p.name = sensor['label']
                 p.daemon = True
                 processes.append(p)
 
-        p0 = Process(target=bridge.read_udp)
+        p0 = Process(target=bridge.read_udp, args=(gpsvar,))
         p0.name = 'GPS Position'
         p0.daemon = True
         processes.append(p0)
