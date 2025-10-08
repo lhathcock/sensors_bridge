@@ -102,7 +102,8 @@ class Bridge():
             'f': 'json',
             'username': self.server_options['username'],
             'password': self.server_options['password'],
-            'referer': 'https://www.arcgis.com', 'client': 'referer'
+            'referer': 'https://www.arcgis.com', 'client': 'referer',
+            'expiration': "1440"
         }
         #headers = {"Content-type": "application/x-www-form-urlencoded",
         #           "Accept": "text/plain"}
